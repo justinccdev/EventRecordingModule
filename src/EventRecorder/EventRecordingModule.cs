@@ -36,7 +36,7 @@ using OpenSim.Region.Framework.Scenes;
 [assembly: Addin("MyModule", "1.0")]
 [assembly: AddinDependency("OpenSim", "0.5")]
 
-namespace OpenSim.Region.OptionalModules.Example.BareBonesShared
+namespace EventRecorder
 {
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "EventRecordingModule")]
     public class EventRecordingModule : ISharedRegionModule
