@@ -33,7 +33,7 @@ using Nini.Config;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 
-[assembly: Addin("MyModule", "1.0")]
+[assembly: Addin("EventRecordingModule", "0.1")]
 [assembly: AddinDependency("OpenSim", "0.5")]
 
 namespace EventRecorder
