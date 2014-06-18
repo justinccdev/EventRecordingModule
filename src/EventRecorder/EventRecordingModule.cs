@@ -66,7 +66,18 @@ namespace EventRecorder
         {
             scene.EventManager.OnSetRootAgentScene 
                 += (agentID, s) 
-                    => m_log.DebugFormat("[EVENT RECORDER]: Notified of avatar {0} entering scene {1}", agentID, s.Name);
+                    => m_log.DebugFormat(
+                        "[EVENT RECORDER]: Notified of avatar {0} moving into scene {1}", agentID, s.Name);
+
+            scene.EventManager.OnMakeChildAgent 
+                += p 
+                    => m_log.DebugFormat(
+                        "[EVENT RECORDER]: Notified of avatar {0} moving away from scene {1}", p.UUID, p.Scene.Name);
+
+            scene.EventManager.OnClientClosed
+                += (agentID, s)
+                    => m_log.DebugFormat(
+                        "[EVENT RECORDER]: Notified of avatar {0} logging out of scene {1}", agentID, s.Name);
         }
         
         public void RemoveRegion(Scene scene)
