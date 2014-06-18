@@ -67,10 +67,10 @@ namespace EventRecorder
         {
             scene.EventManager.OnMakeRootAgent += HandleOnMakeRootAgent;
 
-            scene.EventManager.OnMakeChildAgent 
-                += p 
-                    => m_log.DebugFormat(
-                        "[EVENT RECORDER]: Notified of avatar {0} moving away from scene {1}", p.UUID, p.Scene.Name);
+//            scene.EventManager.OnMakeChildAgent 
+//                += p 
+//                    => m_log.DebugFormat(
+//                        "[EVENT RECORDER]: Notified of avatar {0} moving away from scene {1}", p.UUID, p.Scene.Name);
 
             scene.EventManager.OnClientClosed
                 += (agentID, s)
