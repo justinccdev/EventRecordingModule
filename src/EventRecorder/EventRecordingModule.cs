@@ -30,6 +30,7 @@ using System.Reflection;
 using log4net;
 using Mono.Addins;
 using Nini.Config;
+using OpenSim.Framework;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 
@@ -64,10 +65,7 @@ namespace EventRecorder
         
         public void AddRegion(Scene scene)
         {
-            scene.EventManager.OnSetRootAgentScene 
-                += (agentID, s) 
-                    => m_log.DebugFormat(
-                        "[EVENT RECORDER]: Notified of avatar {0} moving into scene {1}", agentID, s.Name);
+            scene.EventManager.OnMakeRootAgent += HandleOnMakeRootAgent;
 
             scene.EventManager.OnMakeChildAgent 
                 += p 
@@ -78,6 +76,18 @@ namespace EventRecorder
                 += (agentID, s)
                     => m_log.DebugFormat(
                         "[EVENT RECORDER]: Notified of avatar {0} logging out of scene {1}", agentID, s.Name);
+        }
+
+        private void HandleOnMakeRootAgent(ScenePresence sp)
+        {
+            if ((sp.TeleportFlags & Constants.TeleportFlags.ViaLogin) != 0)
+                m_log.DebugFormat(
+                    "[EVENT RECORDER]: Notified of avatar {0} {1} logging into scene {2}", 
+                    sp.Name, sp.UUID, sp.Scene.Name);
+            else
+                m_log.DebugFormat(
+                    "[EVENT RECORDER]: Notified of avatar {0} {1} moving into scene {2}", 
+                    sp.Name, sp.UUID, sp.Scene.Name);            
         }
         
         public void RemoveRegion(Scene scene)
