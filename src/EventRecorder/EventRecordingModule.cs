@@ -30,6 +30,7 @@ using System.Reflection;
 using log4net;
 using Mono.Addins;
 using Nini.Config;
+using OpenMetaverse;
 using OpenSim.Framework;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
@@ -47,6 +48,8 @@ namespace EventRecorder
         public string Name { get { return "Event Recording Module"; } }        
         
         public Type ReplaceableInterface { get { return null; } }
+
+        private OpenSimLoggingRecorder m_recorder = new OpenSimLoggingRecorder();
         
         public void Initialise(IConfigSource source)
         {
@@ -72,22 +75,35 @@ namespace EventRecorder
 //                    => m_log.DebugFormat(
 //                        "[EVENT RECORDER]: Notified of avatar {0} moving away from scene {1}", p.UUID, p.Scene.Name);
 
-            scene.EventManager.OnClientClosed
-                += (agentID, s)
-                    => m_log.DebugFormat(
-                        "[EVENT RECORDER]: Notified of avatar {0} logging out of scene {1}", agentID, s.Name);
+//            scene.EventManager.OnClientClosed
+//                += (agentID, s)
+//                    => m_log.DebugFormat(
+//                        "[EVENT RECORDER]: Notified of avatar {0} logging out of scene {1}", agentID, s.Name);
+
+            scene.EventManager.OnClientClosed += HandleOnClientClosed;
+        }
+
+        private void HandleOnClientClosed(UUID agentID, Scene s)
+        {
+            ScenePresence sp = s.GetScenePresence(agentID);
+
+            if (sp == null)
+            {
+                m_log.WarnFormat(
+                    "[EVENT RECORDER]: Received event that agent {0} had closed in {1} but no scene presence found", 
+                    agentID, s.Name);
+            }
+
+            if (!sp.IsChildAgent)
+                m_recorder.RecordUserLogout(sp);
         }
 
         private void HandleOnMakeRootAgent(ScenePresence sp)
         {
             if ((sp.TeleportFlags & Constants.TeleportFlags.ViaLogin) != 0)
-                m_log.DebugFormat(
-                    "[EVENT RECORDER]: Notified of avatar {0} {1} logging into scene {2}", 
-                    sp.Name, sp.UUID, sp.Scene.Name);
+                m_recorder.RecordUserLogin(sp);
             else
-                m_log.DebugFormat(
-                    "[EVENT RECORDER]: Notified of avatar {0} {1} moving into scene {2}", 
-                    sp.Name, sp.UUID, sp.Scene.Name);            
+                m_recorder.RecordUserEntrance(sp);
         }
         
         public void RemoveRegion(Scene scene)
