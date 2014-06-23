@@ -26,38 +26,28 @@
  */
 
 using System;
-using System.Reflection;
-using log4net;
 using OpenSim.Region.Framework.Scenes;
 
 namespace EventRecorder
 {
-    /// <summary>
-    /// This targets records events to OpenSimulator's internal log file
-    /// </summary>
-    public class OpenSimLoggingRecorder : IRecorder
+    public interface IRecorder
     {
-        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);                
+        /// <summary>
+        /// Record user logging in to the grid to start their session.
+        /// </summary>
+        /// <param name="sp"></param>
+        void RecordUserLogin(ScenePresence sp);
 
-        public void RecordUserLogin(ScenePresence sp)
-        {
-            m_log.DebugFormat(
-                "[EVENT RECORDER]: Notified of avatar {0} {1} logging into scene {2}", 
-                sp.Name, sp.UUID, sp.Scene.Name);
-        }
+        /// <summary>
+        /// Record user logging out of the grid, terminating their session.
+        /// </summary>
+        /// <param name="sp"></param>
+        void RecordUserLogout(ScenePresence sp);
 
-        public void RecordUserLogout(ScenePresence sp)
-        {
-            m_log.DebugFormat(
-                "[EVENT RECORDER]: Notified of avatar {0} {1} logging out of scene {2}", 
-                sp.Name, sp.UUID, sp.Scene.Name);
-        }
-
-        public void RecordUserEntrance(ScenePresence sp)
-        {
-            m_log.DebugFormat(
-                "[EVENT RECORDER]: Notified of avatar {0} {1} moving into scene {2}", 
-                sp.Name, sp.UUID, sp.Scene.Name);  
-        }
+        /// <summary>
+        /// Record user entering another region within the same session.
+        /// </summary>
+        /// <param name="sp">Sp.</param>
+        void RecordUserEntrance(ScenePresence sp);
     }
 }

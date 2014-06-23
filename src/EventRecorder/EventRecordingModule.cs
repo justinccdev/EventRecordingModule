@@ -49,7 +49,7 @@ namespace EventRecorder
         
         public Type ReplaceableInterface { get { return null; } }
 
-        private OpenSimLoggingRecorder m_recorder = new OpenSimLoggingRecorder();
+        private IRecorder m_recorder = new OpenSimLoggingRecorder();
         
         public void Initialise(IConfigSource source)
         {
