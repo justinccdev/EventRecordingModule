@@ -10,7 +10,7 @@ Created in collaboration with AFRL Discovery Lab and Dr.Rob Williams, research d
 
 Follow the standard instructions for building modules from source [MODULE BUILDING].
 
-##Installation## 
+## Installation ## 
 
 The build process will copy the EventRecorder.dll file to $OPENSIM_BASE/bin automatically on each build.  However, you will
 also need to perform the following steps if you haven't before.
