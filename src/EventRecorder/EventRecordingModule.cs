@@ -49,12 +49,14 @@ namespace EventRecorder
         
         public Type ReplaceableInterface { get { return null; } }
 
-        private IRecorder m_recorder = new OpenSimLoggingRecorder();
-//        private IRecorder m_recorder = new MySQLRecorder();
+        private IRecorder m_recorder;
         
         public void Initialise(IConfigSource source)
         {
 //            m_log.DebugFormat("[EVENT RECORDER]: INITIALIZED MODULE");
+
+            m_recorder = new OpenSimLoggingRecorder();
+//            m_recorder = new MySQLRecorder(source);
         }
         
         public void PostInitialise()

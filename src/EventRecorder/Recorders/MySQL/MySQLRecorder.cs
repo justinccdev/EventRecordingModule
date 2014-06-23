@@ -31,6 +31,7 @@ using System.Reflection;
 using FluentMigrator.Runner;
 using log4net;
 using MySql.Data.MySqlClient;
+using Nini.Config;
 using OpenSim.Region.Framework.Scenes;
 
 namespace EventRecorder
@@ -39,11 +40,21 @@ namespace EventRecorder
     {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private string m_connectionString 
-            = "Data Source=localhost;Database=eventrecorder;User ID=root;Password=passw0rd;";
+        private string m_connectionString;
 
-        public MySQLRecorder()
+        public MySQLRecorder(IConfigSource configSource)
         {
+            IConfig config = configSource.Configs["EventRecorder"];
+            if (config == null)
+                throw new Exception("No [EventRecorder] section found for configuring MySQLRecorder.");
+
+            m_connectionString = config.GetString("ConnectionString");
+
+            if (m_connectionString == null)
+                throw new Exception("No ConnectionString parameter found in [EventRecorder] config for MySQLRecorder");
+
+            m_log.DebugFormat("[MYSQL EVENT RECORDER]: Got connection string '{0}'", m_connectionString);
+
             Migrator migrator = new Migrator(m_connectionString);
             migrator.Migrate(runner => runner.MigrateUp());           
         }
