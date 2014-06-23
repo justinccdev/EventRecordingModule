@@ -54,17 +54,17 @@ namespace EventRecorder
         
         public void Initialise(IConfigSource source)
         {
-            m_log.DebugFormat("[EVENT RECORDER]: INITIALIZED MODULE");
+//            m_log.DebugFormat("[EVENT RECORDER]: INITIALIZED MODULE");
         }
         
         public void PostInitialise()
         {
-            m_log.DebugFormat("[EVENT RECORDER]: POST INITIALIZED MODULE");
+//            m_log.DebugFormat("[EVENT RECORDER]: POST INITIALIZED MODULE");
         }
         
         public void Close()
         {
-            m_log.DebugFormat("[EVENT RECORDER]: CLOSED MODULE");
+//            m_log.DebugFormat("[EVENT RECORDER]: CLOSED MODULE");
         }
         
         public void AddRegion(Scene scene)
@@ -109,12 +109,12 @@ namespace EventRecorder
         
         public void RemoveRegion(Scene scene)
         {
-            m_log.DebugFormat("[EVENT RECORDER]: REGION {0} REMOVED", scene.RegionInfo.RegionName);
+//            m_log.DebugFormat("[EVENT RECORDER]: REGION {0} REMOVED", scene.RegionInfo.RegionName);
         }        
         
         public void RegionLoaded(Scene scene)
         {
-            m_log.DebugFormat("[EVENT RECORDER]: REGION {0} LOADED", scene.RegionInfo.RegionName);
+//            m_log.DebugFormat("[EVENT RECORDER]: REGION {0} LOADED", scene.RegionInfo.RegionName);
         }                
     }
 }
