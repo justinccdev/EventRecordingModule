@@ -38,7 +38,7 @@ namespace EventRecordingModule
                 .WithColumn("Id").AsInt32().NotNullable().PrimaryKey().Identity()
                 .WithColumn("UserId").AsString(80)
                 .WithColumn("UserName").AsString(80)
-                .WithColumn("Type").AsInt32()
+                .WithColumn("Type").AsString(10)
                 .WithColumn("Region").AsString(80)
                 .WithColumn("DateTime").AsDateTime();
         }

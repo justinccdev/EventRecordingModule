@@ -50,6 +50,7 @@ namespace EventRecorder
         public Type ReplaceableInterface { get { return null; } }
 
         private IRecorder m_recorder = new OpenSimLoggingRecorder();
+//        private IRecorder m_recorder = new MySQLRecorder();
         
         public void Initialise(IConfigSource source)
         {

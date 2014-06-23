@@ -26,22 +26,56 @@
  */
 
 using System;
+using System.Data;
+using System.Reflection;
 using FluentMigrator.Runner;
+using log4net;
+using MySql.Data.MySqlClient;
 using OpenSim.Region.Framework.Scenes;
 
 namespace EventRecorder
 {
     public class MySQLRecorder : IRecorder
     {
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        private string m_connectionString 
+            = "Data Source=localhost;Database=eventrecorder;User ID=root;Password=passw0rd;";
+
         public MySQLRecorder()
         {
-            Migrator migrator 
-                = new Migrator("Data Source=localhost;Database=eventrecorder;User ID=root;Password=passw0rd;");
-            migrator.Migrate(runner => runner.MigrateUp());
+            Migrator migrator = new Migrator(m_connectionString);
+            migrator.Migrate(runner => runner.MigrateUp());           
         }
 
         public void RecordUserLogin(ScenePresence sp)
         {
+            try
+            {
+                using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
+                {
+                    dbcon.Open();
+
+                    using (MySqlCommand cmd = new MySqlCommand(
+                        "insert into Events (UserId, UserName, Type, Region, DateTime) values (?UserId, ?UserName, ?Type, ?Region, ?DateTime)",
+                        dbcon))
+                    {
+                        cmd.Parameters.AddWithValue("?UserId", sp.UUID);
+                        cmd.Parameters.AddWithValue("?UserName", sp.Name);
+                        cmd.Parameters.AddWithValue("?Type", "login");
+                        cmd.Parameters.AddWithValue("?Region", sp.Scene.Name);
+                        cmd.Parameters.AddWithValue("?DateTime", DateTime.UtcNow);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                m_log.ErrorFormat(
+                    "[MYSQL EVENT RECORDER]: Could not record login of avatar {0} {1} to {2}, error {3}", 
+                    sp.Name, sp.UUID, sp.Scene.Name, e);
+            }
+
 //            m_log.DebugFormat(
 //                "[EVENT RECORDER]: Notified of avatar {0} {1} logging into scene {2}", 
 //                sp.Name, sp.UUID, sp.Scene.Name);
@@ -49,6 +83,32 @@ namespace EventRecorder
 
         public void RecordUserLogout(ScenePresence sp)
         {
+            try
+            {
+                using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
+                {
+                    dbcon.Open();
+
+                    using (MySqlCommand cmd = new MySqlCommand(
+                        "insert into Events (UserId, UserName, Type, Region, DateTime) values (?UserId, ?UserName, ?Type, ?Region, ?DateTime)",
+                        dbcon))
+                    {
+                        cmd.Parameters.AddWithValue("?UserId", sp.UUID);
+                        cmd.Parameters.AddWithValue("?UserName", sp.Name);
+                        cmd.Parameters.AddWithValue("?Type", "logout");
+                        cmd.Parameters.AddWithValue("?Region", sp.Scene.Name);
+                        cmd.Parameters.AddWithValue("?DateTime", DateTime.UtcNow);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                m_log.ErrorFormat(
+                    "[MYSQL EVENT RECORDER]: Could not record login of avatar {0} {1} to {2}, error {3}", 
+                    sp.Name, sp.UUID, sp.Scene.Name, e);
+            }
+
 //            m_log.DebugFormat(
 //                "[EVENT RECORDER]: Notified of avatar {0} {1} logging out of scene {2}", 
 //                sp.Name, sp.UUID, sp.Scene.Name);
@@ -56,6 +116,32 @@ namespace EventRecorder
 
         public void RecordUserEntrance(ScenePresence sp)
         {
+            try
+            {
+                using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
+                {
+                    dbcon.Open();
+
+                    using (MySqlCommand cmd = new MySqlCommand(
+                        "insert into Events (UserId, UserName, Type, Region, DateTime) values (?UserId, ?UserName, ?Type, ?Region, ?DateTime)",
+                        dbcon))
+                    {
+                        cmd.Parameters.AddWithValue("?UserId", sp.UUID);
+                        cmd.Parameters.AddWithValue("?UserName", sp.Name);
+                        cmd.Parameters.AddWithValue("?Type", "enter");
+                        cmd.Parameters.AddWithValue("?Region", sp.Scene.Name);
+                        cmd.Parameters.AddWithValue("?DateTime", DateTime.UtcNow);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                m_log.ErrorFormat(
+                    "[MYSQL EVENT RECORDER]: Could not record login of avatar {0} {1} to {2}, error {3}", 
+                    sp.Name, sp.UUID, sp.Scene.Name, e);
+            }
+
 //            m_log.DebugFormat(
 //                "[EVENT RECORDER]: Notified of avatar {0} {1} moving into scene {2}", 
 //                sp.Name, sp.UUID, sp.Scene.Name);  

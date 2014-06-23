@@ -13,7 +13,9 @@
   <ReferencePath>../../../../bin</ReferencePath>
   <Reference name="FluentMigrator"/>
   <Reference name="FluentMigrator.Runner"/>
+  <Reference name="MySql.Data"/>
   <Reference name="System"/>
+  <Reference name="System.Data"/>
   <Reference name="log4net"/>
   <Reference name="Mono.Addins"/>
   <Reference name="Nini"/>
