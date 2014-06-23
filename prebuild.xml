@@ -11,6 +11,7 @@
   </Configuration>
  
   <ReferencePath>../../../../bin</ReferencePath>
+  <Reference name="FluentMigrator"/>
   <Reference name="System"/>
   <Reference name="log4net"/>
   <Reference name="Mono.Addins"/>
