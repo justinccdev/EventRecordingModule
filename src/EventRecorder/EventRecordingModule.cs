@@ -26,6 +26,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using log4net;
 using Mono.Addins;
@@ -51,12 +52,31 @@ namespace EventRecorder
 
         private IRecorder m_recorder;
         
-        public void Initialise(IConfigSource source)
+        public void Initialise(IConfigSource configSource)
         {
 //            m_log.DebugFormat("[EVENT RECORDER]: INITIALIZED MODULE");
 
-            m_recorder = new OpenSimLoggingRecorder();
-//            m_recorder = new MySQLRecorder(source);
+            HashSet<string> recorders = new HashSet<string>{ "OpenSimLog", "MySQL" };
+
+            IConfig config = configSource.Configs["EventRecorder"];
+            if (config == null)
+                throw new Exception("No [EventRecorder] section found");
+
+            string recorder = config.GetString("Recorder");
+
+            if (recorder == null)
+                throw new Exception(
+                    string.Format("No Recorder parameter found in [EventRecorder] config.  Must be one of {0}", 
+                        string.Join(", ", recorders)));
+
+            if (!recorders.Contains(recorder))
+                throw new Exception(
+                    string.Format("Recorder '{0}' is invalid.  Must be one of {1}", string.Join(", ", recorders)));
+
+            if (recorder == "OpenSimLog")
+                m_recorder = new OpenSimLoggingRecorder();
+            else if (recorder == "MySQL")
+                m_recorder = new MySQLRecorder(configSource);
         }
         
         public void PostInitialise()

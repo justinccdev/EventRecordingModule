@@ -15,6 +15,7 @@
   <Reference name="FluentMigrator.Runner"/>
   <Reference name="MySql.Data"/>
   <Reference name="System"/>
+  <Reference name="System.Core"/>
   <Reference name="System.Data"/>
   <Reference name="log4net"/>
   <Reference name="Mono.Addins"/>
