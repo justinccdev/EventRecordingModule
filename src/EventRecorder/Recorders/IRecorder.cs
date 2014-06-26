@@ -33,21 +33,9 @@ namespace EventRecorder
     public interface IRecorder
     {
         /// <summary>
-        /// Record user logging in to the grid to start their session.
+        /// Record a user region event (login, logout or entrance).
         /// </summary>
         /// <param name="sp"></param>
-        void RecordUserLogin(ScenePresence sp);
-
-        /// <summary>
-        /// Record user logging out of the grid, terminating their session.
-        /// </summary>
-        /// <param name="sp"></param>
-        void RecordUserLogout(ScenePresence sp);
-
-        /// <summary>
-        /// Record user entering another region within the same session.
-        /// </summary>
-        /// <param name="sp">Sp.</param>
-        void RecordUserEntrance(ScenePresence sp);
+        bool RecordUserRegionEvent(UserRegionEvent ev);
     }
 }

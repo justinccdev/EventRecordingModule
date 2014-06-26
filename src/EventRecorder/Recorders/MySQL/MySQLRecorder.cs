@@ -53,13 +53,13 @@ namespace EventRecorder
             if (m_connectionString == null)
                 throw new Exception("No ConnectionString parameter found in [EventRecorder] config for MySQLRecorder");
 
-            m_log.DebugFormat("[MYSQL EVENT RECORDER]: Got connection string '{0}'", m_connectionString);
+//            m_log.DebugFormat("[MYSQL EVENT RECORDER]: Got connection string '{0}'", m_connectionString);
 
             Migrator migrator = new Migrator(m_connectionString);
             migrator.Migrate(runner => runner.MigrateUp());           
         }
 
-        private bool RecordUserEvent(ScenePresence sp, string eventType)
+        public bool RecordUserRegionEvent(UserRegionEvent ev)
         {
             try
             {
@@ -71,11 +71,11 @@ namespace EventRecorder
                         "insert into Events (UserId, UserName, Type, Region, DateTime) values (?UserId, ?UserName, ?Type, ?Region, ?DateTime)",
                         dbcon))
                     {
-                        cmd.Parameters.AddWithValue("?UserId", sp.UUID);
-                        cmd.Parameters.AddWithValue("?UserName", sp.Name);
-                        cmd.Parameters.AddWithValue("?Type", eventType);
-                        cmd.Parameters.AddWithValue("?Region", sp.Scene.Name);
-                        cmd.Parameters.AddWithValue("?DateTime", DateTime.UtcNow);
+                        cmd.Parameters.AddWithValue("?UserId", ev.UserId);
+                        cmd.Parameters.AddWithValue("?UserName", ev.UserName);
+                        cmd.Parameters.AddWithValue("?Type", ev.EventType);
+                        cmd.Parameters.AddWithValue("?Region", ev.RegionName);
+                        cmd.Parameters.AddWithValue("?DateTime", ev.DateTime);
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -84,7 +84,7 @@ namespace EventRecorder
             {
                 m_log.ErrorFormat(
                     "[MYSQL EVENT RECORDER]: Could not record {0} of avatar {1} {2} to {3}, error {4}", 
-                    eventType, sp.Name, sp.UUID, sp.Scene.Name, e);
+                    ev.EventType, ev.UserName, ev.UserId, ev.RegionName, e);
 
                 return false;
             }
@@ -92,31 +92,5 @@ namespace EventRecorder
             return true;
         }
 
-        public void RecordUserLogin(ScenePresence sp)
-        {
-            RecordUserEvent(sp, "login");
-
-//            m_log.DebugFormat(
-//                "[EVENT RECORDER]: Notified of avatar {0} {1} logging into scene {2}", 
-//                sp.Name, sp.UUID, sp.Scene.Name);
-        }
-
-        public void RecordUserLogout(ScenePresence sp)
-        {
-            RecordUserEvent(sp, "logout");
-
-//            m_log.DebugFormat(
-//                "[EVENT RECORDER]: Notified of avatar {0} {1} logging out of scene {2}", 
-//                sp.Name, sp.UUID, sp.Scene.Name);
-        }
-
-        public void RecordUserEntrance(ScenePresence sp)
-        {
-            RecordUserEvent(sp, "enter");
-
-//            m_log.DebugFormat(
-//                "[EVENT RECORDER]: Notified of avatar {0} {1} moving into scene {2}", 
-//                sp.Name, sp.UUID, sp.Scene.Name);  
-        }
     }
 }

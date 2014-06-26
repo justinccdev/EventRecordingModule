@@ -118,15 +118,15 @@ namespace EventRecorder
             }
 
             if (!sp.IsChildAgent)
-                m_recorder.RecordUserLogout(sp);
+                m_recorder.RecordUserRegionEvent(new UserRegionEvent(agentID, sp.Name, "logout", s.Name));
         }
 
         private void HandleOnMakeRootAgent(ScenePresence sp)
         {
             if ((sp.TeleportFlags & Constants.TeleportFlags.ViaLogin) != 0)
-                m_recorder.RecordUserLogin(sp);
+                m_recorder.RecordUserRegionEvent(new UserRegionEvent(sp.UUID, sp.Name, "login", sp.Scene.Name));
             else
-                m_recorder.RecordUserEntrance(sp);
+                m_recorder.RecordUserRegionEvent(new UserRegionEvent(sp.UUID, sp.Name, "enter", sp.Scene.Name));
         }
         
         public void RemoveRegion(Scene scene)

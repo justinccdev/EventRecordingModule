@@ -26,26 +26,33 @@
  */
 
 using System;
-using System.Reflection;
-using log4net;
-using OpenSim.Region.Framework.Scenes;
+using OpenMetaverse;
 
 namespace EventRecorder
 {
-    /// <summary>
-    /// This targets records events to OpenSimulator's internal log file
-    /// </summary>
-    public class OpenSimLoggingRecorder : IRecorder
+    public class UserRegionEvent
     {
-        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);                
+        public UUID UserId { get; set; }
+        public string UserName { get; set; }
+        public string EventType { get; set; }
+        public string RegionName { get; set; }
+        public DateTime DateTime { get; set; }
 
-        public bool RecordUserRegionEvent(UserRegionEvent ev)
+        public UserRegionEvent()
         {
-            m_log.DebugFormat(
-                "[EVENT RECORDER]: Notified of avatar {0} {1} {2} event for scene {3}", 
-                ev.UserName, ev.UserId, ev.EventType, ev.RegionName);
+        }
 
-            return true;
+        public UserRegionEvent(UUID userId, string userName, string eventType, string regionName)
+            : this(userId, userName, eventType, regionName, DateTime.Now)
+        {}
+
+        public UserRegionEvent(UUID userId, string userName, string eventType, string regionName, DateTime datetime)
+        {
+            UserId = userId;
+            UserName = userName;
+            EventType = eventType;
+            RegionName = regionName;
+            DateTime = DateTime.Now;
         }
     }
 }
