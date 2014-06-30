@@ -50,6 +50,11 @@ namespace EventRecorder
         
         public Type ReplaceableInterface { get { return null; } }
 
+        /// <summary>
+        /// Is this module enabled?
+        /// </summary>
+        public bool Enabled { get; private set; }
+
         private IRecorder m_recorder;
         
         public void Initialise(IConfigSource configSource)
@@ -60,7 +65,10 @@ namespace EventRecorder
 
             IConfig config = configSource.Configs["EventRecorder"];
             if (config == null)
-                throw new Exception("No [EventRecorder] section found");
+            {
+                m_log.DebugFormat("[EVENT RECORDER]: No [EventRecorder] config section found");
+                return;
+            }
 
             string recorder = config.GetString("Recorder");
 
@@ -77,6 +85,8 @@ namespace EventRecorder
                 m_recorder = new OpenSimLoggingRecorder();
             else if (recorder == "MySQL")
                 m_recorder = new MySQLRecorder(configSource);
+
+            Enabled = true;
         }
         
         public void PostInitialise()
@@ -91,6 +101,9 @@ namespace EventRecorder
         
         public void AddRegion(Scene scene)
         {
+            if (!Enabled)
+                return;
+
             scene.EventManager.OnMakeRootAgent += HandleOnMakeRootAgent;
 
 //            scene.EventManager.OnMakeChildAgent 
