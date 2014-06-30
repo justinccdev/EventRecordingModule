@@ -21,6 +21,11 @@ also need to perform the following steps if you haven't before.
 3.  Edit the [EventRecorder] section as required.  If you use the MySQL recorder, then you will also need to create the
       database that you specify in the ConnectionString.
 
+##Repository##
+
+This module is hosted at [EVENT RECORDER].  Please report any issues with the bug tracker there.
+
 ##References##
 
+[EVENT RECOREDER] - https://github.com/justincc/EventRecordingModule
 [MODULE BUILDING] - http://opensimulator.org/wiki/IRegionModule#From_existing_module_code
