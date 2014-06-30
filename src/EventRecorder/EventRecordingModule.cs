@@ -70,6 +70,11 @@ namespace EventRecorder
                 return;
             }
 
+            Enabled = config.GetBoolean("Enabled", Enabled);
+
+            if (!Enabled)
+                return;
+
             string recorder = config.GetString("Recorder");
 
             if (recorder == null)
