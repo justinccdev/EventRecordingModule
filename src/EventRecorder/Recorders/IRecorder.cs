@@ -33,6 +33,22 @@ namespace EventRecorder
     public interface IRecorder
     {
         /// <summary>
+        /// Signals whether the recorder is running.
+        /// </summary>
+        /// <remarks>Descendents should signal this on start and stop as appropriate.</remarks>
+        bool IsRunning { get; }
+
+        /// <summary>
+        /// Start the recorder.
+        /// </summary>
+        void Start();
+
+        /// <summary>
+        /// Stop the recorder.
+        /// </summary>
+        void Stop();
+        
+        /// <summary>
         /// Record a user region event (login, logout or entrance).
         /// </summary>
         /// <param name="sp"></param>

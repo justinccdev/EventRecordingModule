@@ -53,7 +53,24 @@ namespace EventRecorder
         /// <summary>
         /// Is this module enabled?
         /// </summary>
-        public bool Enabled { get; private set; }
+        public bool Enabled { get; private set; }       
+
+        /// <summary>
+        /// Indicates whether the simulator has finished adding its initial scenes to the module.
+        /// </summary>
+        /// <remarks>
+        /// This only exists to help handle a bug in OpenSimulator 0.8 where Close() is not called on simulator
+        /// shutdown.
+        /// </remarks>
+        public bool FinishedAddingInitialScenes { get; private set; }
+
+        /// <summary>
+        /// Track the number of scenes being monitored.
+        /// </summary>
+        /// <remarks>
+        /// This only exists to help handle a bug in OpenSimulator 0.8 where Close() is not called on simulator
+        /// shutdown.
+        public int NumberOfScenesMonitored { get; private set; }
 
         private IRecorder m_recorder;
         
@@ -87,11 +104,14 @@ namespace EventRecorder
                     string.Format("Recorder '{0}' is invalid.  Must be one of {1}", string.Join(", ", recorders)));
 
             if (recorder == "OpenSimLog")
-                m_recorder = new OpenSimLoggingRecorder();
+                m_recorder = new QueueingRecorder(new OpenSimLoggingRecorder());
             else if (recorder == "MySQL")
-                m_recorder = new MySQLRecorder(configSource);
+                m_recorder = new QueueingRecorder(new MySQLRecorder(configSource));
 
+            SceneManager.Instance.OnRegionsReadyStatusChange += HandleRegionsReadyStatusChange;
             Enabled = true;
+
+            m_recorder.Start();
         }
         
         public void PostInitialise()
@@ -102,12 +122,26 @@ namespace EventRecorder
         public void Close()
         {
 //            m_log.DebugFormat("[EVENT RECORDER]: CLOSED MODULE");
+            // DUE TO A BUG IN OPENSIMULATOR 0.8 AND BEFORE, THIS IS NOT BEING CALLED ON REGION SHUTDOWN
         }
         
         public void AddRegion(Scene scene)
         {
+//            Console.WriteLine("[EVENT RECORDER]: ADD REGION {0}", scene.Name);
+
             if (!Enabled)
                 return;
+
+            if (FinishedAddingInitialScenes)
+            {
+                m_log.WarnFormat(
+                    "[EVENT RECORDER]: Cannot currently dynamic add scenes to event recorder.  Please restart the simulator to add scene {0}", 
+                    scene.Name);
+
+                return;
+            }
+
+            NumberOfScenesMonitored++;
 
             scene.EventManager.OnMakeRootAgent += HandleOnMakeRootAgent;
 
@@ -121,11 +155,24 @@ namespace EventRecorder
 //                    => m_log.DebugFormat(
 //                        "[EVENT RECORDER]: Notified of avatar {0} logging out of scene {1}", agentID, s.Name);
 
-            scene.EventManager.OnClientClosed += HandleOnClientClosed;
+            scene.EventManager.OnClientClosed += HandleOnClientClosed;           
+        }
+
+        private void HandleRegionsReadyStatusChange(SceneManager sm)
+        {
+            // XXX: This is horrific, but the only way to tell whether we are shutting down at the moment is both to 
+            // scene count and wait for OpenSimulator to signal that all scene are ready after initial startup.
+            // But this stops this module working properly with scene-less simulators and those that add regions afterwards
+            // This will be fixed in the next release of OpenSimulator (post 0.8) when Close() will be called on shutdown.
+            if (sm.AllRegionsReady)
+            {
+                sm.OnRegionsReadyStatusChange -= HandleRegionsReadyStatusChange;
+                FinishedAddingInitialScenes = true;
+            }
         }
 
         private void HandleOnClientClosed(UUID agentID, Scene s)
-        {
+        {           
             ScenePresence sp = s.GetScenePresence(agentID);
 
             if (sp == null)
@@ -145,11 +192,20 @@ namespace EventRecorder
                 m_recorder.RecordUserRegionEvent(new UserRegionEvent(sp.UUID, sp.Name, "login", sp.Scene.Name));
             else
                 m_recorder.RecordUserRegionEvent(new UserRegionEvent(sp.UUID, sp.Name, "enter", sp.Scene.Name));
-        }
+        }       
         
         public void RemoveRegion(Scene scene)
         {
 //            m_log.DebugFormat("[EVENT RECORDER]: REGION {0} REMOVED", scene.RegionInfo.RegionName);
+
+            scene.EventManager.OnMakeRootAgent -= HandleOnMakeRootAgent;
+            scene.EventManager.OnClientClosed -= HandleOnClientClosed;
+
+            if (--NumberOfScenesMonitored <= 0)
+            {
+                m_recorder.Stop();
+                m_log.DebugFormat("[EVENT RECORDER]: Stopped.");
+            }
         }        
         
         public void RegionLoaded(Scene scene)

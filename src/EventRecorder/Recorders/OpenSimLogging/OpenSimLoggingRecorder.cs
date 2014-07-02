@@ -39,6 +39,18 @@ namespace EventRecorder
     {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);                
 
+        public bool IsRunning { get; private set; }
+
+        public void Start()
+        {
+            IsRunning = true;
+        }
+
+        public void Stop()
+        {
+            IsRunning = false;
+        }
+
         public bool RecordUserRegionEvent(UserRegionEvent ev)
         {
             m_log.DebugFormat(
