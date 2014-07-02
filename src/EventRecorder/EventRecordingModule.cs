@@ -53,16 +53,7 @@ namespace EventRecorder
         /// <summary>
         /// Is this module enabled?
         /// </summary>
-        public bool Enabled { get; private set; }       
-
-        /// <summary>
-        /// Indicates whether the simulator has finished adding its initial scenes to the module.
-        /// </summary>
-        /// <remarks>
-        /// This only exists to help handle a bug in OpenSimulator 0.8 where Close() is not called on simulator
-        /// shutdown.
-        /// </remarks>
-        public bool FinishedAddingInitialScenes { get; private set; }
+        public bool Enabled { get; private set; }
 
         /// <summary>
         /// Track the number of scenes being monitored.
@@ -108,7 +99,6 @@ namespace EventRecorder
             else if (recorder == "MySQL")
                 m_recorder = new QueueingRecorder(new MySQLRecorder(configSource));
 
-            SceneManager.Instance.OnRegionsReadyStatusChange += HandleRegionsReadyStatusChange;
             Enabled = true;
 
             m_recorder.Start();
@@ -132,15 +122,6 @@ namespace EventRecorder
             if (!Enabled)
                 return;
 
-            if (FinishedAddingInitialScenes)
-            {
-                m_log.WarnFormat(
-                    "[EVENT RECORDER]: Cannot currently dynamic add scenes to event recorder.  Please restart the simulator to add scene {0}", 
-                    scene.Name);
-
-                return;
-            }
-
             NumberOfScenesMonitored++;
 
             scene.EventManager.OnMakeRootAgent += HandleOnMakeRootAgent;
@@ -156,19 +137,6 @@ namespace EventRecorder
 //                        "[EVENT RECORDER]: Notified of avatar {0} logging out of scene {1}", agentID, s.Name);
 
             scene.EventManager.OnClientClosed += HandleOnClientClosed;           
-        }
-
-        private void HandleRegionsReadyStatusChange(SceneManager sm)
-        {
-            // XXX: This is horrific, but the only way to tell whether we are shutting down at the moment is both to 
-            // scene count and wait for OpenSimulator to signal that all scene are ready after initial startup.
-            // But this stops this module working properly with scene-less simulators and those that add regions afterwards
-            // This will be fixed in the next release of OpenSimulator (post 0.8) when Close() will be called on shutdown.
-            if (sm.AllRegionsReady)
-            {
-                sm.OnRegionsReadyStatusChange -= HandleRegionsReadyStatusChange;
-                FinishedAddingInitialScenes = true;
-            }
         }
 
         private void HandleOnClientClosed(UUID agentID, Scene s)
