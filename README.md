@@ -6,6 +6,11 @@ This module will record various events that take place on a simulator (e.g. avat
 
 Created in collaboration with AFRL Discovery Lab and Dr.Rob Williams, research director.
 
+##Requirements##
+
+Like OpenSimulator 0.8 onwards, this module requires the .net 4.0 SDK.  With Mono, this means that you need a version
+higher than 2.8 to run it.
+
 ##Building##
 
 Follow the standard instructions for building modules from source [MODULE BUILDING].
