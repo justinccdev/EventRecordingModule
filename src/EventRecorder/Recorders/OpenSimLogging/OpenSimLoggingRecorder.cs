@@ -37,7 +37,7 @@ namespace EventRecorder
     /// </summary>
     public class OpenSimLoggingRecorder : IRecorder
     {
-        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);                
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public bool IsRunning { get; private set; }
 

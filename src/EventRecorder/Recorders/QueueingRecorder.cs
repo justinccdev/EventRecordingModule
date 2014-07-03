@@ -38,7 +38,7 @@ namespace EventRecorder
 {
     public class QueueingRecorder : IRecorder
     {
-        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);                
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public bool IsRunning { get; private set; }
 

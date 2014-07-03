@@ -40,9 +40,9 @@ namespace EventRecorder
     {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private string m_connectionString;
-
         public bool IsRunning { get; private set; }
+
+        private string m_connectionString;       
 
         public void Start()
         {

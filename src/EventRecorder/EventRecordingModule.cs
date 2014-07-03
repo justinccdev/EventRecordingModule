@@ -83,21 +83,27 @@ namespace EventRecorder
             if (!Enabled)
                 return;
 
-            string recorder = config.GetString("Recorder");
+            string recorderName = config.GetString("Recorder");           
 
-            if (recorder == null)
+            IRecorder decoratedRecorder;
+
+            if (recorderName == "OpenSimLog")
+                decoratedRecorder = new OpenSimLoggingRecorder();
+            else if (recorderName == "MySQL")
+                decoratedRecorder = new MySQLRecorder(configSource);
+            else if (recorderName == null)
                 throw new Exception(
                     string.Format("No Recorder parameter found in [EventRecorder] config.  Must be one of {0}", 
-                        string.Join(", ", recorders)));
-
-            if (!recorders.Contains(recorder))
+                              string.Join(", ", recorders)));
+            else
                 throw new Exception(
-                    string.Format("Recorder '{0}' is invalid.  Must be one of {1}", string.Join(", ", recorders)));
+                    string.Format(
+                        "Recorder '{0}' is not a valid recorder name.  Must be one of {1}", 
+                        recorderName, string.Join(", ", recorders)));
 
-            if (recorder == "OpenSimLog")
-                m_recorder = new QueueingRecorder(new OpenSimLoggingRecorder());
-            else if (recorder == "MySQL")
-                m_recorder = new QueueingRecorder(new MySQLRecorder(configSource));
+            m_recorder = new QueueingRecorder(decoratedRecorder);
+
+            m_log.InfoFormat("[EVENT RECORDER]: Initialized with recorder {0}", recorderName);
 
             Enabled = true;
 
