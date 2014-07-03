@@ -26,6 +26,12 @@ also need to perform the following steps if you haven't before.
 3.  Edit the [EventRecorder] section as required.  If you use the MySQL recorder, then you will also need to create the
       database that you specify in the ConnectionString.
 
+##Issues##
+
+* At the moment, this module will not work properly if the number of regions on a simulator drops to zero without
+the simulator being shutdown (this is possible if one dynamically removes regions).  It will be possible to 
+handle this case when the next version of OpenSimulator is released
+
 ##Repository##
 
 This module is hosted at [EVENT RECORDER].  Please report any issues with the bug tracker there.
