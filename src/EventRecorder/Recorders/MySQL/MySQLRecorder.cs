@@ -40,6 +40,8 @@ namespace EventRecorder
     {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public string Name { get { return "MySQL"; } }
+
         public bool IsRunning { get; private set; }
 
         private string m_connectionString;       

@@ -34,6 +34,12 @@ namespace EventRecorder
     public interface IRecorder
     {
         /// <summary>
+        /// Name of this recorder
+        /// </summary>
+        /// <value>The name.</value>
+        string Name { get; }
+
+        /// <summary>
         /// Signals whether the recorder is running.
         /// </summary>
         /// <remarks>Descendents should signal this on start and stop as appropriate.</remarks>

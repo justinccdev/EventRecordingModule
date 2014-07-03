@@ -40,6 +40,8 @@ namespace EventRecorder
     {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public string Name { get { return "OpenSimLog"; } }
+
         public bool IsRunning { get; private set; }
 
         public void Initialise(IConfigSource configSource) {}

@@ -41,7 +41,14 @@ namespace EventRecorder
     {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public string Name { get { return string.Format("Queueing -> {0}", m_decoratedRecorder.Name); } }
+
         public bool IsRunning { get; private set; }       
+
+        /// <summary>
+        /// Number of events waiting in queue.
+        /// </summary>
+        public int Count { get { return m_eventWriteQueue.Count; } }
 
         /// <summary>
         /// The decorated recorder (http://en.wikipedia.org/wiki/Decorator_pattern) which we'll use to write events
@@ -61,7 +68,7 @@ namespace EventRecorder
         /// This is flipped to false once queue max has been exceeded and back to true when it falls below max, in 
         /// order to avoid spamming the log with lots of warnings.
         /// </remarks>
-        private bool m_warnOverMaxQueue = true;
+        private bool m_warnOverMaxQueue = true;       
 
         private CancellationTokenSource m_cancelSource = new CancellationTokenSource();
 

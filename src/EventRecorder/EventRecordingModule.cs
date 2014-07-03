@@ -33,6 +33,7 @@ using Mono.Addins;
 using Nini.Config;
 using OpenMetaverse;
 using OpenSim.Framework;
+using OpenSim.Framework.Console;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 
@@ -63,7 +64,7 @@ namespace EventRecorder
         /// shutdown.
         public int NumberOfScenesMonitored { get; private set; }
 
-        private IRecorder m_recorder;
+        private QueueingRecorder m_recorder;
         
         public void Initialise(IConfigSource configSource)
         {
@@ -103,6 +104,9 @@ namespace EventRecorder
 
             m_recorder = new QueueingRecorder(decoratedRecorder);
             m_recorder.Initialise(configSource);
+
+            MainConsole.Instance.Commands.AddCommand(
+                "EventRecorder", true, "evr info", "evr info", "Show event recorder info", HandleInfoCommand);
 
             m_log.InfoFormat("[EVENT RECORDER]: Initialized with recorder {0}", recorderName);
 
@@ -144,6 +148,15 @@ namespace EventRecorder
 //                        "[EVENT RECORDER]: Notified of avatar {0} logging out of scene {1}", agentID, s.Name);
 
             scene.EventManager.OnClientClosed += HandleOnClientClosed;           
+        }
+
+        private void HandleInfoCommand(string module, string[] args)
+        {
+            ConsoleDisplayList cdl = new ConsoleDisplayList();
+            cdl.AddRow("Recorder", m_recorder.Name);
+            cdl.AddRow("Events queued", m_recorder.Count);
+
+            MainConsole.Instance.Output(cdl.ToString());
         }
 
         private void HandleOnClientClosed(UUID agentID, Scene s)

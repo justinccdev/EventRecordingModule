@@ -26,6 +26,10 @@ also need to perform the following steps if you haven't before.
 3.  Edit the [EventRecorder] section as required.  If you use the MySQL recorder, then you will also need to create the
       database that you specify in the ConnectionString.
 
+##Console Commands##
+
+* evr info - This will print out current information about the event recorder (e.g. number of events queued for writing.
+
 ##Issues##
 
 * At the moment, this module will not work properly if the number of regions on a simulator drops to zero without
