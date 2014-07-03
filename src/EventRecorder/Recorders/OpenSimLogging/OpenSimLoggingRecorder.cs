@@ -28,6 +28,7 @@
 using System;
 using System.Reflection;
 using log4net;
+using Nini.Config;
 using OpenSim.Region.Framework.Scenes;
 
 namespace EventRecorder
@@ -40,6 +41,8 @@ namespace EventRecorder
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public bool IsRunning { get; private set; }
+
+        public void Initialise(IConfigSource configSource) {}
 
         public void Start()
         {

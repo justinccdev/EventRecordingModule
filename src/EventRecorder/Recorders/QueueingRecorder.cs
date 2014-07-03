@@ -30,6 +30,7 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using System.Threading;
 using log4net;
+using Nini.Config;
 using OpenSim.Framework;
 using OpenSim.Framework.Monitoring;
 using OpenSim.Region.Framework.Scenes;
@@ -40,7 +41,7 @@ namespace EventRecorder
     {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public bool IsRunning { get; private set; }
+        public bool IsRunning { get; private set; }       
 
         /// <summary>
         /// The decorated recorder (http://en.wikipedia.org/wiki/Decorator_pattern) which we'll use to write events
@@ -64,6 +65,11 @@ namespace EventRecorder
         public QueueingRecorder(IRecorder decoratedRecorder)
         {
             m_decoratedRecorder = decoratedRecorder;
+        }
+
+        public void Initialise(IConfigSource configSource) 
+        {
+            m_decoratedRecorder.Initialise(configSource);
         }
 
         public void Start()

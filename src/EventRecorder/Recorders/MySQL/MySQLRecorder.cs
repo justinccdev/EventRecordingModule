@@ -54,7 +54,7 @@ namespace EventRecorder
             IsRunning = false;
         }
 
-        public MySQLRecorder(IConfigSource configSource)
+        public void Initialise(IConfigSource configSource)
         {
             IConfig config = configSource.Configs["EventRecorder"];
             if (config == null)

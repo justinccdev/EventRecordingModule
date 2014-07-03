@@ -90,7 +90,7 @@ namespace EventRecorder
             if (recorderName == "OpenSimLog")
                 decoratedRecorder = new OpenSimLoggingRecorder();
             else if (recorderName == "MySQL")
-                decoratedRecorder = new MySQLRecorder(configSource);
+                decoratedRecorder = new MySQLRecorder();
             else if (recorderName == null)
                 throw new Exception(
                     string.Format("No Recorder parameter found in [EventRecorder] config.  Must be one of {0}", 
@@ -102,6 +102,7 @@ namespace EventRecorder
                         recorderName, string.Join(", ", recorders)));
 
             m_recorder = new QueueingRecorder(decoratedRecorder);
+            m_recorder.Initialise(configSource);
 
             m_log.InfoFormat("[EVENT RECORDER]: Initialized with recorder {0}", recorderName);
 

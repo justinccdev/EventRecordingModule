@@ -26,6 +26,7 @@
  */
 
 using System;
+using Nini.Config;
 using OpenSim.Region.Framework.Scenes;
 
 namespace EventRecorder
@@ -37,6 +38,12 @@ namespace EventRecorder
         /// </summary>
         /// <remarks>Descendents should signal this on start and stop as appropriate.</remarks>
         bool IsRunning { get; }
+
+        /// <summary>
+        /// Initialise the recorder
+        /// </summary>
+        /// <param name="configSource">Configuration parameters.</param>
+        void Initialise(IConfigSource configSource);
 
         /// <summary>
         /// Start the recorder.
