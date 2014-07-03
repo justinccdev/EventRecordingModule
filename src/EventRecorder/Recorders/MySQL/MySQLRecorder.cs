@@ -57,9 +57,6 @@ namespace EventRecorder
         public void Initialise(IConfigSource configSource)
         {
             IConfig config = configSource.Configs["EventRecorder"];
-            if (config == null)
-                throw new Exception("No [EventRecorder] section found for configuring MySQLRecorder.");
-
             m_connectionString = config.GetString("ConnectionString");
 
             if (m_connectionString == null)
