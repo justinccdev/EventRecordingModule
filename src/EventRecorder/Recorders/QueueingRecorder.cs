@@ -54,6 +54,15 @@ namespace EventRecorder
         /// </summary>
         private BlockingCollection<UserRegionEvent> m_eventWriteQueue;
 
+        /// <summary>
+        /// Controls whether we need to warn in the log about exceeding the max queue size.
+        /// </summary>
+        /// <remarks>
+        /// This is flipped to false once queue max has been exceeded and back to true when it falls below max, in 
+        /// order to avoid spamming the log with lots of warnings.
+        /// </remarks>
+        private bool m_warnOverMaxQueue = true;
+
         private CancellationTokenSource m_cancelSource = new CancellationTokenSource();
 
         /// <summary>
@@ -133,13 +142,19 @@ namespace EventRecorder
                 if (m_eventWriteQueue.Count < m_eventWriteQueue.BoundedCapacity)
                 {
                     m_eventWriteQueue.Add(ev);
+                    m_warnOverMaxQueue = true;
                     return true;
                 }
                 else
                 {
-                    m_log.WarnFormat(
-                        "[EVENT RECORDER]: Event Queue at maximum capacity, not recording event {0} for {1} {2}", 
-                        ev.EventType, ev.UserName, ev.UserId);
+                    if (m_warnOverMaxQueue)
+                    {
+                        m_log.WarnFormat(
+                            "[EVENT RECORDER]: Event Queue at maximum capacity, not recording event {0} for {1} {2}", 
+                            ev.EventType, ev.UserName, ev.UserId);
+
+                        m_warnOverMaxQueue = false;
+                    }
 
                     return false;
                 }
