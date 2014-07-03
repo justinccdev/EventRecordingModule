@@ -43,11 +43,6 @@ namespace EventRecorder
         public bool IsRunning { get; private set; }
 
         /// <summary>
-        /// Set to true if we are in the processing of stopping.
-        /// </summary>
-        private bool m_isStopping;
-
-        /// <summary>
         /// The decorated recorder (http://en.wikipedia.org/wiki/Decorator_pattern) which we'll use to write events
         /// that we pull off the queue.
         /// </summary>
