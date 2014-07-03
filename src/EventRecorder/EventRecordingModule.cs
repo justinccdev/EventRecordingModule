@@ -180,19 +180,19 @@ namespace EventRecorder
             MainConsole.Instance.Output(cdl.ToString());
         }
 
-        private void HandleOnClientClosed(UUID agentID, Scene s)
+        private void HandleOnClientClosed(UUID agentId, Scene s)
         {           
-            ScenePresence sp = s.GetScenePresence(agentID);
+            ScenePresence sp = s.GetScenePresence(agentId);
 
             if (sp == null)
             {
                 m_log.WarnFormat(
                     "[EVENT RECORDER]: Received event that agent {0} had closed in {1} but no scene presence found", 
-                    agentID, s.Name);
+                    agentId, s.Name);
             }
 
             if (!sp.IsChildAgent)
-                m_recorder.RecordUserRegionEvent(new UserRegionEvent(agentID, sp.Name, "logout", m_gridId, s.Name));
+                m_recorder.RecordUserRegionEvent(new UserRegionEvent(agentId, sp.Name, "logout", m_gridId, s.Name));
         }
 
         private void HandleOnMakeRootAgent(ScenePresence sp)
