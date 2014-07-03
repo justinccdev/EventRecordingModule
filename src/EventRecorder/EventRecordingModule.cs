@@ -34,6 +34,7 @@ using Nini.Config;
 using OpenMetaverse;
 using OpenSim.Framework;
 using OpenSim.Framework.Console;
+using OpenSim.Framework.Monitoring;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 
@@ -65,6 +66,9 @@ namespace EventRecorder
         public int NumberOfScenesMonitored { get; private set; }
 
         private QueueingRecorder m_recorder;
+
+        private const int GridIdMaxSize = 36;
+        private string m_gridId;
         
         public void Initialise(IConfigSource configSource)
         {
@@ -82,7 +86,22 @@ namespace EventRecorder
             Enabled = config.GetBoolean("Enabled", Enabled);
 
             if (!Enabled)
-                return;
+                return;           
+
+            // This is not necessary for all recorders but it's cleaner to enforce upfront than potentially end up
+            // with a migration problem later.
+            if (!config.Contains("GridID"))
+                throw new Exception("A GridID must bs specified in the [EventRecorder] config section.");
+
+            m_gridId = config.GetString("GridID");
+
+            if (m_gridId.Length > GridIdMaxSize)
+                throw new Exception(
+                    string.Format(
+                        "GridId [{0}] at {1} chars is longer than the maximum {2} chars", 
+                        m_gridId, m_gridId.Length, GridIdMaxSize));
+
+            m_log.DebugFormat("[EVENT RECORDER]: GridId set to {0}", m_gridId);
 
             string recorderName = config.GetString("Recorder");           
 
@@ -154,6 +173,7 @@ namespace EventRecorder
         {
             ConsoleDisplayList cdl = new ConsoleDisplayList();
             cdl.AddRow("Recorder", m_recorder.Name);
+            cdl.AddRow("Grid ID", m_gridId);
             cdl.AddRow("Events queue capacity", m_recorder.Capacity);
             cdl.AddRow("Events queued", m_recorder.Count);
 
@@ -172,15 +192,15 @@ namespace EventRecorder
             }
 
             if (!sp.IsChildAgent)
-                m_recorder.RecordUserRegionEvent(new UserRegionEvent(agentID, sp.Name, "logout", s.Name));
+                m_recorder.RecordUserRegionEvent(new UserRegionEvent(agentID, sp.Name, "logout", m_gridId, s.Name));
         }
 
         private void HandleOnMakeRootAgent(ScenePresence sp)
         {
             if ((sp.TeleportFlags & Constants.TeleportFlags.ViaLogin) != 0)
-                m_recorder.RecordUserRegionEvent(new UserRegionEvent(sp.UUID, sp.Name, "login", sp.Scene.Name));
+                m_recorder.RecordUserRegionEvent(new UserRegionEvent(sp.UUID, sp.Name, "login", m_gridId, sp.Scene.Name));
             else
-                m_recorder.RecordUserRegionEvent(new UserRegionEvent(sp.UUID, sp.Name, "enter", sp.Scene.Name));
+                m_recorder.RecordUserRegionEvent(new UserRegionEvent(sp.UUID, sp.Name, "enter", m_gridId, sp.Scene.Name));
         }       
         
         public void RemoveRegion(Scene scene)

@@ -79,12 +79,13 @@ namespace EventRecorder
                     dbcon.Open();
 
                     using (MySqlCommand cmd = new MySqlCommand(
-                        "insert into Events (UserId, UserName, Type, Region, DateTime) values (?UserId, ?UserName, ?Type, ?Region, ?DateTime)",
+                        "insert into Events (UserId, UserName, Type, GridId, Region, DateTime) values (?UserId, ?UserName, ?Type, ?GridId, ?Region, ?DateTime)",
                         dbcon))
                     {
                         cmd.Parameters.AddWithValue("?UserId", ev.UserId);
                         cmd.Parameters.AddWithValue("?UserName", ev.UserName);
                         cmd.Parameters.AddWithValue("?Type", ev.EventType);
+                        cmd.Parameters.AddWithValue("?GridId", ev.GridId);
                         cmd.Parameters.AddWithValue("?Region", ev.RegionName);
                         cmd.Parameters.AddWithValue("?DateTime", ev.DateTime);
                         cmd.ExecuteNonQuery();

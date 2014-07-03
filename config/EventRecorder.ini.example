@@ -13,6 +13,14 @@
     ; Note that Database is different from the OpenSimulator database, though in principle EventRecorder could live there too
     ConnectionString = "Data Source=localhost;Database=eventrecorder;User ID=root;Password=passw0rd;"
 
+    ; This is the id that will be added to all recorded events
+    ; It must be set by changing the value and then uncommenting the line - the module will not start without it
+    ; This can be a maximum of 36 characters and so can be a Guid/UUID or simply a unique grid name
+    ; Currently, this is not using data directly from any [GridInfo] section as those are presented directly to the user and can be changed.
+    ; Technically, this could be used to identify any simulator or group of simulators, though usually this will be the same for all simulators
+    ; on the same grid
+    ;GridId = my-grid-id
+
     ; Maximum number of events that will be queued for writing before additional events are ignored.
     ; Increase this if you see warnings on the console about events being discarded.
     ; Storing more events will take more memory.

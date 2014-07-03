@@ -25,6 +25,7 @@ also need to perform the following steps if you haven't before.
       OR copy the config/EventRecorder.ini to $OPENSIM_BASE/bin/addon-modules/EventRecordingModule/config/EventRecorder.ini
 3.  Edit the [EventRecorder] section as required.  If you use the MySQL recorder, then you will also need to create the
       database that you specify in the ConnectionString.
+      You will always need to set a GridId in this section.
 
 ##Console Commands##
 

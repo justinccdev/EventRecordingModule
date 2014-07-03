@@ -32,6 +32,7 @@ namespace EventRecorder
 {
     public class UserRegionEvent
     {
+        public string GridId { get; set; }
         public UUID UserId { get; set; }
         public string UserName { get; set; }
         public string EventType { get; set; }
@@ -42,15 +43,17 @@ namespace EventRecorder
         {
         }
 
-        public UserRegionEvent(UUID userId, string userName, string eventType, string regionName)
-            : this(userId, userName, eventType, regionName, DateTime.Now)
+        public UserRegionEvent(UUID userId, string userName, string eventType, string gridId, string regionName)
+            : this(userId, userName, eventType, gridId, regionName, DateTime.Now)
         {}
 
-        public UserRegionEvent(UUID userId, string userName, string eventType, string regionName, DateTime datetime)
+        public UserRegionEvent(
+            UUID userId, string userName, string eventType, string gridId, string regionName, DateTime datetime)
         {
             UserId = userId;
             UserName = userName;
             EventType = eventType;
+            GridId = gridId;
             RegionName = regionName;
             DateTime = DateTime.Now;
         }

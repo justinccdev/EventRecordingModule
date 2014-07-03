@@ -48,4 +48,18 @@ namespace EventRecordingModule
             Delete.Table("Events");
         }
     }
+
+    [Migration(2)]
+    public class AddGridId : Migration
+    {
+        public override void Up()
+        {
+            Alter.Table("Events").AddColumn("GridId").AsString(36).NotNullable();
+        }
+
+        public override void Down()
+        {
+            Delete.Column("GridId").FromTable("Events");
+        }
+    }
 }
