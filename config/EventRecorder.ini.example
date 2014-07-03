@@ -6,9 +6,15 @@
     ; If this line is not present or Enabled = false then the module will not be active
     Enabled = true
 
-    ; Can be either "OpenSimLog" (to record to OpenSim.log) or "MySQL" (to record to MySQL)
+    ; Must be either "OpenSimLog" (to record to OpenSim.log) or "MySQL" (to record to MySQL)
     Recorder = OpenSimLog
 
     ; If using the MySQL Recorder, set this to the MySQL connection string.
     ; Note that Database is different from the OpenSimulator database, though in principle EventRecorder could live there too
     ConnectionString = "Data Source=localhost;Database=eventrecorder;User ID=root;Password=passw0rd;"
+
+    ; Maximum number of events that will be queued for writing before additional events are ignored.
+    ; Increase this if you see warnings on the console about events being discarded.
+    ; Storing more events will take more memory.
+    ; Default is 5000.
+    MaxEventQueueSize = 5000;

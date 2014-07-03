@@ -52,8 +52,7 @@ namespace EventRecorder
         /// <summary>
         /// Events are queued here before they are finally written.
         /// </summary>
-        private BlockingCollection<UserRegionEvent> m_eventWriteQueue 
-            = new BlockingCollection<UserRegionEvent>(new ConcurrentQueue<UserRegionEvent>());
+        private BlockingCollection<UserRegionEvent> m_eventWriteQueue;
 
         private CancellationTokenSource m_cancelSource = new CancellationTokenSource();
 
@@ -64,12 +63,24 @@ namespace EventRecorder
 
         public QueueingRecorder(IRecorder decoratedRecorder)
         {
-            m_decoratedRecorder = decoratedRecorder;
+            m_decoratedRecorder = decoratedRecorder; 
         }
 
         public void Initialise(IConfigSource configSource) 
         {
+            IConfig config = configSource.Configs["EventRecorder"];
+
             m_decoratedRecorder.Initialise(configSource);
+                        
+            int maxQueueSize = config.GetInt("MaxEventQueueSize", int.MaxValue);
+
+            if (maxQueueSize <= 0)
+                throw new Exception(string.Format("MaxEventQueueSize must be > 0.  Value {0} is invalid", maxQueueSize));
+            else
+                m_log.DebugFormat("[EVENT RECORDER]: Using MaxEventQueueSize of {0}", maxQueueSize);
+
+            m_eventWriteQueue 
+                = new BlockingCollection<UserRegionEvent>(new ConcurrentQueue<UserRegionEvent>(), maxQueueSize);
         }
 
         public void Start()
@@ -93,9 +104,9 @@ namespace EventRecorder
             {
                 while (IsRunning || m_eventWriteQueue.Count > 0)
                 {
-                    UserRegionEvent ev = m_eventWriteQueue.Take(m_cancelSource.Token);
 //                    Console.WriteLine("Sleeping");
-//                    Thread.Sleep(30000);
+//                    Thread.Sleep(60000);
+                    UserRegionEvent ev = m_eventWriteQueue.Take(m_cancelSource.Token);
 //                    Console.WriteLine("Finished Sleeping");
 
                     RecordUserRegionEventFromQueue(ev);
@@ -115,9 +126,24 @@ namespace EventRecorder
 
         public bool RecordUserRegionEvent(UserRegionEvent ev)
         {
-            m_eventWriteQueue.Add(ev);
+            // We need to lock here to avoid a situation where two threads could simultaneous attempt to record an
+            // event and both pass the size check before writing.
+            lock (m_eventWriteQueue)
+            {
+                if (m_eventWriteQueue.Count < m_eventWriteQueue.BoundedCapacity)
+                {
+                    m_eventWriteQueue.Add(ev);
+                    return true;
+                }
+                else
+                {
+                    m_log.WarnFormat(
+                        "[EVENT RECORDER]: Event Queue at maximum capacity, not recording event {0} for {1} {2}", 
+                        ev.EventType, ev.UserName, ev.UserId);
 
-            return true;
+                    return false;
+                }
+            }
         }
 
         public void Stop()
