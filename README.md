@@ -38,5 +38,5 @@ This module is hosted at [EVENT RECORDER].  Please report any issues with the bu
 
 ##References##
 
-[EVENT RECOREDER] - https://github.com/justincc/EventRecordingModule
+[EVENT RECORDER] - https://github.com/justincc/EventRecordingModule
 [MODULE BUILDING] - http://opensimulator.org/wiki/IRegionModule#From_existing_module_code
