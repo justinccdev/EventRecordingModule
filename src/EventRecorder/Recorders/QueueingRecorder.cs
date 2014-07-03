@@ -51,6 +51,11 @@ namespace EventRecorder
         public int Count { get { return m_eventWriteQueue.Count; } }
 
         /// <summary>
+        /// Maximum event capacity.
+        /// </summary>
+        public int Capacity { get { return m_eventWriteQueue.BoundedCapacity; } }
+
+        /// <summary>
         /// The decorated recorder (http://en.wikipedia.org/wiki/Decorator_pattern) which we'll use to write events
         /// that we pull off the queue.
         /// </summary>

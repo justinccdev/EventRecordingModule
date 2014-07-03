@@ -154,6 +154,7 @@ namespace EventRecorder
         {
             ConsoleDisplayList cdl = new ConsoleDisplayList();
             cdl.AddRow("Recorder", m_recorder.Name);
+            cdl.AddRow("Events queue capacity", m_recorder.Capacity);
             cdl.AddRow("Events queued", m_recorder.Count);
 
             MainConsole.Instance.Output(cdl.ToString());
