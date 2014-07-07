@@ -60,11 +60,11 @@ namespace EventRecorder
         /// Stop the recorder.
         /// </summary>
         void Stop();
-        
+
         /// <summary>
-        /// Record a user region event (login, logout or entrance).
+        /// Record an event
         /// </summary>
-        /// <param name="sp"></param>
-        bool RecordUserRegionEvent(UserRegionEvent ev);
+        /// <param name="ev"></param>
+        bool RecordEvent(object ev);
     }
 }

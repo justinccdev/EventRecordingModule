@@ -64,7 +64,7 @@ namespace EventRecorder
         /// <summary>
         /// Events are queued here before they are finally written.
         /// </summary>
-        private BlockingCollection<UserRegionEvent> m_eventWriteQueue;
+        private BlockingCollection<object> m_eventWriteQueue;
 
         /// <summary>
         /// Controls whether we need to warn in the log about exceeding the max queue size.
@@ -101,7 +101,7 @@ namespace EventRecorder
                 m_log.DebugFormat("[EVENT RECORDER]: Using MaxEventQueueSize of {0}", maxQueueSize);
 
             m_eventWriteQueue 
-                = new BlockingCollection<UserRegionEvent>(new ConcurrentQueue<UserRegionEvent>(), maxQueueSize);
+                = new BlockingCollection<object>(new ConcurrentQueue<object>(), maxQueueSize);
         }
 
         public void Start()
@@ -127,10 +127,10 @@ namespace EventRecorder
                 {
 //                    Console.WriteLine("Sleeping");
 //                    Thread.Sleep(60000);
-                    UserRegionEvent ev = m_eventWriteQueue.Take(m_cancelSource.Token);
+                    object ev = m_eventWriteQueue.Take(m_cancelSource.Token);
 //                    Console.WriteLine("Finished Sleeping");
 
-                    RecordUserRegionEventFromQueue(ev);
+                    RecordEventFromQueue(ev);
                 }
             }
             catch (OperationCanceledException)
@@ -140,12 +140,12 @@ namespace EventRecorder
             m_finishedWritingAfterStop.Set();
         }
 
-        private void RecordUserRegionEventFromQueue(UserRegionEvent ev)
+        private void RecordEventFromQueue(object ev)
         {
-            m_decoratedRecorder.RecordUserRegionEvent(ev);
+            m_decoratedRecorder.RecordEvent(ev);
         }
 
-        public bool RecordUserRegionEvent(UserRegionEvent ev)
+        public bool RecordEvent(object ev)
         {
             // We need to lock here to avoid a situation where two threads could simultaneous attempt to record an
             // event and both pass the size check before writing.
@@ -162,8 +162,7 @@ namespace EventRecorder
                     if (m_warnOverMaxQueue)
                     {
                         m_log.WarnFormat(
-                            "[EVENT RECORDER]: Event Queue at maximum capacity, not recording event {0} for {1} {2}", 
-                            ev.EventType, ev.UserName, ev.UserId);
+                            "[EVENT RECORDER]: Event Queue at maximum capacity, not recording event {0}", ev);
 
                         m_warnOverMaxQueue = false;
                     }

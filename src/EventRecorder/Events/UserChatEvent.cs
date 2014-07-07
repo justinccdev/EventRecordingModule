@@ -27,32 +27,39 @@
 
 using System;
 using OpenMetaverse;
+using OpenSim.Framework;
 
 namespace EventRecorder
 {
-    public class UserRegionEvent
+    public class UserChatEvent
     {
-        public string GridId { get; set; }
         public UUID UserId { get; set; }
         public string UserName { get; set; }
-        public string EventType { get; set; }
         public string RegionName { get; set; }
+        public Vector3 Origin { get; set; }
+        public ChatTypeEnum ChatType { get; set; }
+        public string Text { get; set; }
+        public int Channel { get; set; }
         public DateTime DateTime { get; set; }
+        public string GridId { get; set; }
 
-        public UserRegionEvent()
+        public UserChatEvent()
         {
         }
 
-        public UserRegionEvent(UUID userId, string userName, string eventType, string gridId, string regionName)
-            : this(userId, userName, eventType, gridId, regionName, DateTime.Now)
+        public UserChatEvent(UUID userId, string userName, Vector3 origin, ChatTypeEnum chatType, string text, int channel, string gridId, string regionName)
+            : this(userId, userName, origin, chatType, text, channel, gridId, regionName, DateTime.Now)
         {}
 
-        public UserRegionEvent(
-            UUID userId, string userName, string eventType, string gridId, string regionName, DateTime datetime)
+        public UserChatEvent(
+            UUID userId, string userName, Vector3 origin, ChatTypeEnum chatType, string text, int channel, string gridId, string regionName, DateTime datetime)
         {
             UserId = userId;
             UserName = userName;
-            EventType = eventType;
+            Origin = origin;
+            ChatType = chatType;
+            Text = text;
+            Channel = channel;
             GridId = gridId;
             RegionName = regionName;
             DateTime = DateTime.Now;
@@ -60,7 +67,7 @@ namespace EventRecorder
 
         public override string ToString()
         {
-            return string.Format("{0} for {1} {2}", EventType, UserName, UserId);
+            return string.Format("{0} for {1} {2}", "chat", UserName, UserId);
         }
     }
 }

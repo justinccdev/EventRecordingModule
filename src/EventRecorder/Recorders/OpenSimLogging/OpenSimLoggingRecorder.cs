@@ -56,10 +56,29 @@ namespace EventRecorder
             IsRunning = false;
         }
 
-        public bool RecordUserRegionEvent(UserRegionEvent ev)
+        public bool RecordEvent(object ev)
+        {
+            if (ev is UserChatEvent)
+                return RecordEvent(ev as UserChatEvent);
+            else if (ev is UserRegionEvent)
+                return RecordEvent(ev as UserRegionEvent);
+
+            return false;
+        }
+
+        private bool RecordEvent(UserChatEvent ev)
         {
             m_log.DebugFormat(
-                "[EVENT RECORDER]: Notified of avatar {0} {1} {2} event for scene {3}", 
+                "[EVENT RECORDER]: Notified of avatar {0} {1} chat {2} {3} \"{4}\" from {5} in {6}",
+                ev.UserName, ev.UserId, ev.ChatType, ev.Channel, ev.Text, ev.Origin, ev.RegionName);
+
+            return true;
+        }
+
+        private bool RecordEvent(UserRegionEvent ev)
+        {
+            m_log.DebugFormat(
+                "[EVENT RECORDER]: Notified of avatar {0} {1} {2} event in scene {3}", 
                 ev.UserName, ev.UserId, ev.EventType, ev.RegionName);
 
             return true;

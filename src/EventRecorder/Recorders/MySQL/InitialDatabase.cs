@@ -62,4 +62,30 @@ namespace EventRecordingModule
             Delete.Column("GridId").FromTable("Events");
         }
     }
+
+    [Migration(3)]
+    public class AddChatEventsTable : Migration
+    {
+        public override void Up()
+        {
+            Create.Table("UserChatEvents")
+                .WithColumn("Id").AsInt32().NotNullable().PrimaryKey().Identity()
+                    .WithColumn("UserId").AsString(80)
+                    .WithColumn("UserName").AsString(80)
+                    .WithColumn("OriginX").AsFloat()
+                    .WithColumn("OriginY").AsFloat()
+                    .WithColumn("OriginZ").AsFloat()
+                    .WithColumn("Type").AsString(10)
+                    .WithColumn("Text").AsString(1024) // SL chat limit
+                    .WithColumn("Channel").AsInt32()
+                    .WithColumn("Region").AsString(80)
+                    .WithColumn("DateTime").AsDateTime()
+                    .WithColumn("GridId").AsString(36).NotNullable();
+        }
+
+        public override void Down()
+        {
+            Delete.Table("UserChatEvents");
+        }
+    }
 }

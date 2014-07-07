@@ -167,6 +167,8 @@ namespace EventRecorder
 //                        "[EVENT RECORDER]: Notified of avatar {0} logging out of scene {1}", agentID, s.Name);
 
             scene.EventManager.OnClientClosed += HandleOnClientClosed;           
+
+            //scene.EventManager.OnChatToClients += HandleOnChatToClients;
         }
 
         private void HandleInfoCommand(string module, string[] args)
@@ -192,15 +194,29 @@ namespace EventRecorder
             }
 
             if (!sp.IsChildAgent)
-                m_recorder.RecordUserRegionEvent(new UserRegionEvent(agentId, sp.Name, "logout", m_gridId, s.Name));
+                m_recorder.RecordEvent(new UserRegionEvent(agentId, sp.Name, "logout", m_gridId, s.Name));
         }
 
         private void HandleOnMakeRootAgent(ScenePresence sp)
         {
             if ((sp.TeleportFlags & Constants.TeleportFlags.ViaLogin) != 0)
-                m_recorder.RecordUserRegionEvent(new UserRegionEvent(sp.UUID, sp.Name, "login", m_gridId, sp.Scene.Name));
+                m_recorder.RecordEvent(new UserRegionEvent(sp.UUID, sp.Name, "login", m_gridId, sp.Scene.Name));
             else
-                m_recorder.RecordUserRegionEvent(new UserRegionEvent(sp.UUID, sp.Name, "enter", m_gridId, sp.Scene.Name));
+                m_recorder.RecordEvent(new UserRegionEvent(sp.UUID, sp.Name, "enter", m_gridId, sp.Scene.Name));
+
+            sp.ControllingClient.OnChatFromClient += HandleOnChatFromClient;
+        }
+
+        private void HandleOnChatFromClient(object sender, OSChatMessage e)
+        {
+            IClientAPI client = (IClientAPI)sender;
+
+            if (ChatTypeEnum.Whisper != e.Type && ChatTypeEnum.Say != e.Type && ChatTypeEnum.Shout != e.Type)
+                return;
+
+            m_recorder.RecordEvent( 
+                new UserChatEvent(
+                    client.AgentId, client.Name, e.Position, e.Type, e.Message, e.Channel, m_gridId, client.Scene.Name));
         }       
         
         public void RemoveRegion(Scene scene)

@@ -70,7 +70,54 @@ namespace EventRecorder
             migrator.Migrate(runner => runner.MigrateUp());           
         }
 
-        public bool RecordUserRegionEvent(UserRegionEvent ev)
+        public bool RecordEvent(object ev)
+        {
+            if (ev is UserChatEvent)
+                return RecordEvent(ev as UserChatEvent);
+            else if (ev is UserRegionEvent)
+                return RecordEvent(ev as UserRegionEvent);
+
+            return false;
+        }
+
+        private bool RecordEvent(UserChatEvent ev)
+        {
+            try
+            {
+                using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
+                {
+                    dbcon.Open();
+
+                    using (MySqlCommand cmd = new MySqlCommand(
+                        "insert into UserChatEvents (UserId, UserName, OriginX, OriginY, OriginZ, Type, Text, Channel, GridId, Region, DateTime) values (?UserId, ?UserName, ?OriginX, ?OriginY, ?OriginZ, ?Type, ?Text, ?Channel, ?GridId, ?Region, ?DateTime)",
+                        dbcon))
+                    {
+                        cmd.Parameters.AddWithValue("?UserId", ev.UserId);
+                        cmd.Parameters.AddWithValue("?UserName", ev.UserName);
+                        cmd.Parameters.AddWithValue("?OriginX", ev.Origin.X);
+                        cmd.Parameters.AddWithValue("?OriginY", ev.Origin.Y);
+                        cmd.Parameters.AddWithValue("?OriginZ", ev.Origin.Z);
+                        cmd.Parameters.AddWithValue("?Type", ev.ChatType.ToString());
+                        cmd.Parameters.AddWithValue("?Text", ev.Text);
+                        cmd.Parameters.AddWithValue("?Channel", ev.Channel);
+                        cmd.Parameters.AddWithValue("?GridId", ev.GridId);
+                        cmd.Parameters.AddWithValue("?Region", ev.RegionName);
+                        cmd.Parameters.AddWithValue("?DateTime", ev.DateTime);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                m_log.ErrorFormat("[MYSQL EVENT RECORDER]: Could not record {0}, error {1}", ev, e);
+
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool RecordEvent(UserRegionEvent ev)
         {
             try
             {
@@ -94,15 +141,12 @@ namespace EventRecorder
             }
             catch (Exception e)
             {
-                m_log.ErrorFormat(
-                    "[MYSQL EVENT RECORDER]: Could not record {0} of avatar {1} {2} to {3}, error {4}", 
-                    ev.EventType, ev.UserName, ev.UserId, ev.RegionName, e);
+                m_log.ErrorFormat("[MYSQL EVENT RECORDER]: Could not record {0}, error {1}", ev, e);
 
                 return false;
             }
 
             return true;
         }
-
     }
 }
