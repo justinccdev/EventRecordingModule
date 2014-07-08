@@ -11,7 +11,7 @@ THESE FORMATS ARE NOT FINAL.  USE WITH CAUTION.
 
 The database table formats are as follows
 
-### Events ###
+### UserRegionEvents ###
 
 This holds user login, logout and region entrance events (not triggered on
 initial login region).  The format is

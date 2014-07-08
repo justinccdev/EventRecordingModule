@@ -109,7 +109,21 @@ namespace EventRecordingModule
 
         public override void Down()
         {
-            Delete.Table("UserChatEvents");
+            Delete.Table("UserImEvents");
+        }
+    }
+
+    [Migration(5)]
+    public class RenameEventsTable : Migration
+    {
+        public override void Up()
+        {
+            Rename.Table("Events").To("UserRegionEvents");
+        }
+
+        public override void Down()
+        {
+            Rename.Table("UserRegionEvents").To("Events");
         }
     }
 }
