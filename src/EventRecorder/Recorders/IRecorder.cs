@@ -62,9 +62,15 @@ namespace EventRecorder
         void Stop();
 
         /// <summary>
-        /// Record an event
+        /// Record a user region event.
         /// </summary>
         /// <param name="ev"></param>
-        bool RecordEvent(object ev);
+        bool RecordEvent(UserChatEvent ev);
+
+        /// <summary>
+        /// Record a user chat event.
+        /// </summary>
+        /// <param name="ev"></param>
+        bool RecordEvent(UserRegionEvent ev);
     }
 }

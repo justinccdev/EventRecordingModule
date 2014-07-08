@@ -31,7 +31,7 @@ using OpenSim.Framework;
 
 namespace EventRecorder
 {
-    public class UserChatEvent
+    public class UserChatEvent : IEvent
     {
         public UUID UserId { get; set; }
         public string UserName { get; set; }
@@ -63,6 +63,11 @@ namespace EventRecorder
             GridId = gridId;
             RegionName = regionName;
             DateTime = DateTime.Now;
+        }
+
+        public bool Record(IRecorder recorder)
+        {
+            return recorder.RecordEvent(this);
         }
 
         public override string ToString()

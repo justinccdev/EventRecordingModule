@@ -64,7 +64,7 @@ namespace EventRecorder
         /// <summary>
         /// Events are queued here before they are finally written.
         /// </summary>
-        private BlockingCollection<object> m_eventWriteQueue;
+        private BlockingCollection<IEvent> m_eventWriteQueue;
 
         /// <summary>
         /// Controls whether we need to warn in the log about exceeding the max queue size.
@@ -101,7 +101,7 @@ namespace EventRecorder
                 m_log.DebugFormat("[EVENT RECORDER]: Using MaxEventQueueSize of {0}", maxQueueSize);
 
             m_eventWriteQueue 
-                = new BlockingCollection<object>(new ConcurrentQueue<object>(), maxQueueSize);
+                = new BlockingCollection<IEvent>(new ConcurrentQueue<IEvent>(), maxQueueSize);
         }
 
         public void Start()
@@ -127,7 +127,7 @@ namespace EventRecorder
                 {
 //                    Console.WriteLine("Sleeping");
 //                    Thread.Sleep(60000);
-                    object ev = m_eventWriteQueue.Take(m_cancelSource.Token);
+                    IEvent ev = m_eventWriteQueue.Take(m_cancelSource.Token);
 //                    Console.WriteLine("Finished Sleeping");
 
                     RecordEventFromQueue(ev);
@@ -140,12 +140,22 @@ namespace EventRecorder
             m_finishedWritingAfterStop.Set();
         }
 
-        private void RecordEventFromQueue(object ev)
+        private void RecordEventFromQueue(IEvent ev)
         {
-            m_decoratedRecorder.RecordEvent(ev);
+            ev.Record(m_decoratedRecorder);
         }
 
-        public bool RecordEvent(object ev)
+        public bool RecordEvent(UserChatEvent ev)
+        {
+            return RecordEventInternal(ev);
+        }
+
+        public bool RecordEvent(UserRegionEvent ev)
+        {
+            return RecordEventInternal(ev);
+        }
+
+        private bool RecordEventInternal(IEvent ev)
         {
             // We need to lock here to avoid a situation where two threads could simultaneous attempt to record an
             // event and both pass the size check before writing.

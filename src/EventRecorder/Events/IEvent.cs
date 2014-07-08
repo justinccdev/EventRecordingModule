@@ -26,46 +26,11 @@
  */
 
 using System;
-using OpenMetaverse;
 
 namespace EventRecorder
 {
-    public class UserRegionEvent : IEvent
+    public interface IEvent
     {
-        public string GridId { get; set; }
-        public UUID UserId { get; set; }
-        public string UserName { get; set; }
-        public string EventType { get; set; }
-        public string RegionName { get; set; }
-        public DateTime DateTime { get; set; }
-
-        public UserRegionEvent()
-        {
-        }
-
-        public UserRegionEvent(UUID userId, string userName, string eventType, string gridId, string regionName)
-            : this(userId, userName, eventType, gridId, regionName, DateTime.Now)
-        {}
-
-        public UserRegionEvent(
-            UUID userId, string userName, string eventType, string gridId, string regionName, DateTime datetime)
-        {
-            UserId = userId;
-            UserName = userName;
-            EventType = eventType;
-            GridId = gridId;
-            RegionName = regionName;
-            DateTime = DateTime.Now;
-        }
-
-        public bool Record(IRecorder recorder)
-        {
-            return recorder.RecordEvent(this);
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0} for {1} {2}", EventType, UserName, UserId);
-        }
+        bool Record(IRecorder recorder);
     }
 }

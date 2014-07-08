@@ -70,17 +70,7 @@ namespace EventRecorder
             migrator.Migrate(runner => runner.MigrateUp());           
         }
 
-        public bool RecordEvent(object ev)
-        {
-            if (ev is UserChatEvent)
-                return RecordEvent(ev as UserChatEvent);
-            else if (ev is UserRegionEvent)
-                return RecordEvent(ev as UserRegionEvent);
-
-            return false;
-        }
-
-        private bool RecordEvent(UserChatEvent ev)
+        public bool RecordEvent(UserChatEvent ev)
         {
             try
             {
@@ -117,7 +107,7 @@ namespace EventRecorder
             return true;
         }
 
-        private bool RecordEvent(UserRegionEvent ev)
+        public bool RecordEvent(UserRegionEvent ev)
         {
             try
             {

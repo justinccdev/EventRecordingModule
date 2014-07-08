@@ -56,17 +56,7 @@ namespace EventRecorder
             IsRunning = false;
         }
 
-        public bool RecordEvent(object ev)
-        {
-            if (ev is UserChatEvent)
-                return RecordEvent(ev as UserChatEvent);
-            else if (ev is UserRegionEvent)
-                return RecordEvent(ev as UserRegionEvent);
-
-            return false;
-        }
-
-        private bool RecordEvent(UserChatEvent ev)
+        public bool RecordEvent(UserChatEvent ev)
         {
             m_log.DebugFormat(
                 "[EVENT RECORDER]: Notified of avatar {0} {1} chat {2} {3} \"{4}\" from {5} in {6}",
@@ -75,7 +65,7 @@ namespace EventRecorder
             return true;
         }
 
-        private bool RecordEvent(UserRegionEvent ev)
+        public bool RecordEvent(UserRegionEvent ev)
         {
             m_log.DebugFormat(
                 "[EVENT RECORDER]: Notified of avatar {0} {1} {2} event in scene {3}", 
