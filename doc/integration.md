@@ -32,7 +32,7 @@ Type is one of "login", "logout", or "enter".
 
 ### UserChatEvents ###
 
-This holds user chat events (not instant messages).  The format is
+This holds user chat events.  The format is
 
 +----------+-------------+------+-----+---------+----------------+
 | Field    | Type        | Null | Key | Default | Extra          |
@@ -54,6 +54,28 @@ This holds user chat events (not instant messages).  The format is
 Type is one of "whisper", "say", or "shout".
 
 Channel corresponds to the Second Life protocol channel [CHANNEL].
+
+### UserImEvents ###
+
+This holds user instant message events.  The format is
+
++--------------+-------------+------+-----+---------+----------------+
+| Field        | Type        | Null | Key | Default | Extra          |
++--------------+-------------+------+-----+---------+----------------+
+| Id           | int(11)     | NO   | PRI | NULL    | auto_increment |
+| UserId       | varchar(36) | NO   |     | NULL    |                |
+| UserName     | varchar(80) | NO   |     | NULL    |                |
+| ReceiverId   | varchar(36) | NO   |     | NULL    |                |
+| ReceiverName | varchar(80) | NO   |     | NULL    |                |
+| ReceiverType | varchar(10) | NO   |     | NULL    |                |
+| Text         | text        | NO   |     | NULL    |                |
+| Region       | varchar(80) | NO   |     | NULL    |                |
+| DateTime     | datetime    | NO   |     | NULL    |                |
+| GridId       | varchar(36) | NO   |     | NULL    |                |
++--------------+-------------+------+-----+---------+----------------+
+
+ReceiverType is one of "user" or "group" and signifies whether the instant
+message was sent to another user or to a group.
 
 # References #
 

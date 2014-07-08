@@ -107,6 +107,41 @@ namespace EventRecorder
             return true;
         }
 
+        public bool RecordEvent(UserImEvent ev)
+        {
+            try
+            {
+                using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
+                {
+                    dbcon.Open();
+
+                    using (MySqlCommand cmd = new MySqlCommand(
+                        "insert into UserImEvents (UserId, UserName, ReceiverId, ReceiverName, ReceiverType, Text, GridId, Region, DateTime) values (?UserId, ?UserName, ?ReceiverId, ?ReceiverName, ?ReceiverType, ?Text, ?GridId, ?Region, ?DateTime)",
+                        dbcon))
+                    {
+                        cmd.Parameters.AddWithValue("?UserId", ev.UserId);
+                        cmd.Parameters.AddWithValue("?UserName", ev.UserName);
+                        cmd.Parameters.AddWithValue("?ReceiverId", ev.ReceiverId);
+                        cmd.Parameters.AddWithValue("?ReceiverName", ev.ReceiverName);
+                        cmd.Parameters.AddWithValue("?ReceiverType", ev.IsReceiverGroup ? "group" : "user");
+                        cmd.Parameters.AddWithValue("?Text", ev.Text);
+                        cmd.Parameters.AddWithValue("?GridId", ev.GridId);
+                        cmd.Parameters.AddWithValue("?Region", ev.RegionName);
+                        cmd.Parameters.AddWithValue("?DateTime", ev.DateTime);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                m_log.ErrorFormat("[MYSQL EVENT RECORDER]: Could not record {0}, error {1}", ev, e);
+
+                return false;
+            }
+
+            return true;
+        }
+
         public bool RecordEvent(UserRegionEvent ev)
         {
             try

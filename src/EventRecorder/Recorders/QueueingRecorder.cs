@@ -155,6 +155,11 @@ namespace EventRecorder
             return RecordEventInternal(ev);
         }
 
+        public bool RecordEvent(UserImEvent ev)
+        {
+            return RecordEventInternal(ev);
+        }
+
         private bool RecordEventInternal(IEvent ev)
         {
             // We need to lock here to avoid a situation where two threads could simultaneous attempt to record an

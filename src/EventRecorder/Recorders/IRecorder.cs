@@ -72,5 +72,14 @@ namespace EventRecorder
         /// </summary>
         /// <param name="ev"></param>
         bool RecordEvent(UserRegionEvent ev);
+
+        /// <summary>
+        /// Record a user instant message event.
+        /// </summary>
+        /// <remarks>
+        /// This includes instant messages to both other users and to groups.
+        /// </remarks>
+        /// <param name="ev"></param>
+        bool RecordEvent(UserImEvent ev);
     }
 }

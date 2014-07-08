@@ -63,9 +63,27 @@ namespace EventRecorder
         /// <remarks>
         /// This only exists to help handle a bug in OpenSimulator 0.8 where Close() is not called on simulator
         /// shutdown.
-        public int NumberOfScenesMonitored { get; private set; }
+        public int RegionsMonitoredCount { get; private set; }
 
+        /// <summary>
+        /// This only exists so that we know when all regions have initially loaded.  Dumb, eh?
+        /// </summary>
+        public int RegionsLoadedCount { get; private set; }
+
+        /// <summary>
+        /// Used to record events.
+        /// </summary>
         private QueueingRecorder m_recorder;
+
+        /// <summary>
+        /// Used to resolve UUID -> user name.
+        /// </summary>
+        private IUserManagement m_userManagementModule;
+
+        /// <summary>
+        /// Used to resolve UUID -> group name.
+        /// </summary>
+        private IGroupsModule m_groupsModule;
 
         private const int GridIdMaxSize = 36;
         private string m_gridId;
@@ -83,9 +101,9 @@ namespace EventRecorder
                 return;
             }
 
-            Enabled = config.GetBoolean("Enabled", Enabled);
+            bool enabledInConfig = config.GetBoolean("Enabled", false);
 
-            if (!Enabled)
+            if (!enabledInConfig)
                 return;           
 
             // This is not necessary for all recorders but it's cleaner to enforce upfront than potentially end up
@@ -123,15 +141,6 @@ namespace EventRecorder
 
             m_recorder = new QueueingRecorder(decoratedRecorder);
             m_recorder.Initialise(configSource);
-
-            MainConsole.Instance.Commands.AddCommand(
-                "EventRecorder", true, "evr info", "evr info", "Show event recorder info", HandleInfoCommand);
-
-            m_log.InfoFormat("[EVENT RECORDER]: Initialized with recorder {0}", recorderName);
-
-            Enabled = true;
-
-            m_recorder.Start();
         }
         
         public void PostInitialise()
@@ -149,10 +158,7 @@ namespace EventRecorder
         {
 //            Console.WriteLine("[EVENT RECORDER]: ADD REGION {0}", scene.Name);
 
-            if (!Enabled)
-                return;
-
-            NumberOfScenesMonitored++;
+            RegionsMonitoredCount++;
 
             scene.EventManager.OnMakeRootAgent += HandleOnMakeRootAgent;
 
@@ -183,7 +189,10 @@ namespace EventRecorder
         }
 
         private void HandleOnClientClosed(UUID agentId, Scene s)
-        {           
+        {                  
+            if (!Enabled)
+                return;
+
             ScenePresence sp = s.GetScenePresence(agentId);
 
             if (sp == null)
@@ -198,13 +207,17 @@ namespace EventRecorder
         }
 
         private void HandleOnMakeRootAgent(ScenePresence sp)
-        {
+        {            
+            if (!Enabled)
+                return;
+
             if ((sp.TeleportFlags & Constants.TeleportFlags.ViaLogin) != 0)
                 m_recorder.RecordEvent(new UserRegionEvent(sp.UUID, sp.Name, "login", m_gridId, sp.Scene.Name));
             else
                 m_recorder.RecordEvent(new UserRegionEvent(sp.UUID, sp.Name, "enter", m_gridId, sp.Scene.Name));
 
             sp.ControllingClient.OnChatFromClient += HandleOnChatFromClient;
+            sp.ControllingClient.OnInstantMessage += HandleOnInstantMessage;
         }
 
         private void HandleOnChatFromClient(object sender, OSChatMessage e)
@@ -217,7 +230,45 @@ namespace EventRecorder
             m_recorder.RecordEvent( 
                 new UserChatEvent(
                     client.AgentId, client.Name, e.Position, e.Type, e.Message, e.Channel, m_gridId, client.Scene.Name));
-        }       
+        }
+
+        private void HandleOnInstantMessage(IClientAPI client, GridInstantMessage msg)
+        {
+//            m_log.DebugFormat(
+//                "[EVENT RECORDER]: Handling IM from {0} {1}, type {2}", 
+//                client.Name, client.AgentId, (InstantMessageDialog)msg.dialog);
+
+            if (msg.dialog != (byte)InstantMessageDialog.MessageFromAgent 
+                && msg.dialog != (byte)InstantMessageDialog.SessionSend)
+                return;           
+
+            bool toGroup = msg.dialog == (byte)InstantMessageDialog.SessionSend;
+            string receiverName = "UNKNOWN";
+            UUID receiverId;
+
+            if (toGroup)
+            {
+                receiverId = new UUID(msg.imSessionID);
+
+                if (m_groupsModule != null)
+                {
+                    GroupRecord gr = m_groupsModule.GetGroupRecord(receiverId);
+
+                    if (gr != null)
+                        receiverName = gr.GroupName;
+                }
+            }
+            else
+            {
+                receiverId = new UUID(msg.fromAgentID);
+                receiverName = m_userManagementModule.GetUserName(new UUID(msg.toAgentID));
+            }
+
+            m_recorder.RecordEvent(
+                new UserImEvent(
+                    new UUID(msg.fromAgentID), msg.fromAgentName, receiverId, receiverName, 
+                    toGroup, msg.message, m_gridId, client.Scene.Name));
+        }
         
         public void RemoveRegion(Scene scene)
         {
@@ -226,7 +277,7 @@ namespace EventRecorder
             scene.EventManager.OnMakeRootAgent -= HandleOnMakeRootAgent;
             scene.EventManager.OnClientClosed -= HandleOnClientClosed;
 
-            if (--NumberOfScenesMonitored <= 0)
+            if (--RegionsMonitoredCount <= 0)
             {
                 m_recorder.Stop();
                 m_log.DebugFormat("[EVENT RECORDER]: Stopped.");
@@ -235,7 +286,32 @@ namespace EventRecorder
         
         public void RegionLoaded(Scene scene)
         {
-//            m_log.DebugFormat("[EVENT RECORDER]: REGION {0} LOADED", scene.RegionInfo.RegionName);
+            //            m_log.DebugFormat("[EVENT RECORDER]: REGION {0} LOADED", scene.RegionInfo.RegionName);
+
+            RegionsLoadedCount++;
+
+            if (RegionsLoadedCount == RegionsMonitoredCount && !Enabled)
+            {
+                m_userManagementModule = scene.RequestModuleInterface<IUserManagement>();
+
+                if (m_userManagementModule == null)
+                {
+                    m_log.ErrorFormat("[EVENT RECORDER]: IUserManagement module required but not present.  Not enabling.");
+                    return;
+                }
+
+                // If this scene doesn't have a groups module then we shouldn't see any group requests.
+                m_groupsModule = scene.RequestModuleInterface<IGroupsModule>();
+                            
+                MainConsole.Instance.Commands.AddCommand(
+                    "EventRecorder", true, "evr info", "evr info", "Show event recorder info", HandleInfoCommand);
+
+                m_log.InfoFormat("[EVENT RECORDER]: Initialized with recorder {0}", m_recorder.Name);
+
+                Enabled = true;
+
+                m_recorder.Start();
+            }
         }                
     }
 }

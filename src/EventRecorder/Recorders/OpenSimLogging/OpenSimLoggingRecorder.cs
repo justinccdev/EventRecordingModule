@@ -65,6 +65,15 @@ namespace EventRecorder
             return true;
         }
 
+        public bool RecordEvent(UserImEvent ev)
+        {
+            m_log.DebugFormat(
+                "[EVENT RECORDER]: Notified of avatar {0} {1} IM to {2} {3} {4} \"{5}\" in {6}",
+                ev.UserName, ev.UserId, ev.IsReceiverGroup ? "group" : "user", ev.ReceiverId, ev.ReceiverName, ev.RegionName);
+
+            return true;
+        }
+
         public bool RecordEvent(UserRegionEvent ev)
         {
             m_log.DebugFormat(
