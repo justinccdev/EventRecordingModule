@@ -51,4 +51,9 @@
     ; Increase this if you see warnings on the console about events being discarded.
     ; Storing more events will take more memory.
     ; Default is 5000.
-    MaxEventQueueSize = 5000;
+    MaxEventQueueSize = 5000
+
+    ; How long we will wait, in milliseconds, for at least one event to be written when the module has been told to stop (e.g. on simulator shutdown).
+    ; If no events are written in this time then the remaining queued events will be discarded and shutdown will continue.
+    ; Defaults to 20000 ms
+    EventWriteTimeoutOnStop = 20000

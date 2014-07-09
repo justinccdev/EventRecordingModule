@@ -56,6 +56,11 @@ namespace EventRecorder
         public int Capacity { get { return m_eventWriteQueue.BoundedCapacity; } }
 
         /// <summary>
+        /// The timeout in milliseconds to wait for at least one event to be written when the recorder is stopping.
+        /// </summary>
+        public int EventWriteTimeoutOnStop { get; set; }
+
+        /// <summary>
         /// The decorated recorder (http://en.wikipedia.org/wiki/Decorator_pattern) which we'll use to write events
         /// that we pull off the queue.
         /// </summary>
@@ -73,7 +78,7 @@ namespace EventRecorder
         /// This is flipped to false once queue max has been exceeded and back to true when it falls below max, in 
         /// order to avoid spamming the log with lots of warnings.
         /// </remarks>
-        private bool m_warnOverMaxQueue = true;       
+        private bool m_warnOverMaxQueue = true;              
 
         /// <summary>
         /// Used to cancel the event writing thread on shutdown if necessary.
@@ -103,6 +108,14 @@ namespace EventRecorder
             else
                 m_log.DebugFormat("[EVENT RECORDER]: Using MaxEventQueueSize of {0}", maxQueueSize);
 
+            EventWriteTimeoutOnStop = config.GetInt("EventWriteTimeoutOnStop", 20000);
+
+            if (EventWriteTimeoutOnStop < 0)
+                throw new Exception(
+                    string.Format("EventWriteTimeoutOnStop must be >= 0.  Value {0} ms is invalid", EventWriteTimeoutOnStop));
+            else
+                m_log.DebugFormat("[EVENT RECORDER]: Using EventWriteTimeoutOnStop of {0} ms", EventWriteTimeoutOnStop);
+
             m_eventWriteQueue 
                 = new BlockingCollection<IEvent>(new ConcurrentQueue<IEvent>(), maxQueueSize);
         }
@@ -129,7 +142,7 @@ namespace EventRecorder
                 while (IsRunning || m_eventWriteQueue.Count > 0)
                 {
 //                    Console.WriteLine("Sleeping");
-//                    Thread.Sleep(60000);
+//                    Thread.Sleep(15000);
                     IEvent ev = m_eventWriteQueue.Take(m_cancelSource.Token);
 //                    Console.WriteLine("Finished Sleeping");
 
@@ -208,11 +221,31 @@ namespace EventRecorder
                     int eventsLeft = m_eventWriteQueue.Count;
 //                    Console.WriteLine("eventsLeft {0}", eventsLeft);
                     if (eventsLeft <= 0)
+                    {
                         m_cancelSource.Cancel();
+                    }
                     else 
+                    {
                         m_log.InfoFormat("[EVENT RECORDER]: Waiting to write {0} events after stop.", eventsLeft);
 
-                    m_finishedWritingAfterStop.WaitOne();
+                        while (eventsLeft > 0)
+                        {
+                            if (!m_finishedWritingAfterStop.WaitOne(EventWriteTimeoutOnStop))
+                            {
+                                // After timeout no events have been written
+                                if (eventsLeft == m_eventWriteQueue.Count)
+                                {
+                                    m_log.WarnFormat(
+                                        "[EVENT RECORDER]: No events written after {0} ms wait.  Discarding remaining {1} events", 
+                                        EventWriteTimeoutOnStop, eventsLeft);
+
+                                    break;
+                                }
+                            }
+
+                            eventsLeft = m_eventWriteQueue.Count;
+                        }
+                    }
                 }
                 finally
                 {
