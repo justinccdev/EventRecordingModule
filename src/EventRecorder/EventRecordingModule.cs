@@ -58,12 +58,17 @@ namespace EventRecorder
         public bool Enabled { get; private set; }
 
         /// <summary>
-        /// Sets whether we are recording user to user instant messages.
+        /// Are we record user chat events?
+        /// </summary>
+        public bool RecordUserChatEvents { get; set; }
+
+        /// <summary>
+        /// Are recording user to user instant messages?
         /// </summary>
         public bool RecordUserToUserImEvents { get; set; }
 
         /// <summary>
-        /// Sets whether we are recording user to group instant messages.
+        /// Are we recording user to group instant messages?
         /// </summary>
         public bool RecordUserToGroupImEvents { get; set; }
 
@@ -152,8 +157,9 @@ namespace EventRecorder
             m_recorder = new QueueingRecorder(decoratedRecorder);
             m_recorder.Initialise(configSource);
 
+            RecordUserChatEvents = config.GetBoolean("RecordUserChatEvents", RecordUserChatEvents);
             RecordUserToUserImEvents = config.GetBoolean("RecordUserToUserImEvents", RecordUserToUserImEvents);
-            RecordUserToGroupImEvents = config.GetBoolean("RecordUserToGroupImEvents", RecordUserToUserImEvents);
+            RecordUserToGroupImEvents = config.GetBoolean("RecordUserToGroupImEvents", RecordUserToGroupImEvents);
         }
         
         public void PostInitialise()
@@ -195,6 +201,7 @@ namespace EventRecorder
             ConsoleDisplayList cdl = new ConsoleDisplayList();
             cdl.AddRow("Recorder", m_recorder.Name);
             cdl.AddRow("Grid ID", m_gridId);
+            cdl.AddRow("RecordUserChatEvents", RecordUserChatEvents);
             cdl.AddRow("RecordUserToUserImEvents", RecordUserToUserImEvents);
             cdl.AddRow("RecordUserToGroupImEvents", RecordUserToGroupImEvents);
             cdl.AddRow("Events queue capacity", m_recorder.Capacity);
@@ -237,6 +244,9 @@ namespace EventRecorder
 
         private void HandleOnChatFromClient(object sender, OSChatMessage e)
         {
+            if (!RecordUserChatEvents)
+                return;
+
             IClientAPI client = (IClientAPI)sender;
 
             if (ChatTypeEnum.Whisper != e.Type && ChatTypeEnum.Say != e.Type && ChatTypeEnum.Shout != e.Type)
