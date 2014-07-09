@@ -36,7 +36,7 @@ namespace EventRecordingModule
         {
             Create.Table("Events")
                 .WithColumn("Id").AsInt32().NotNullable().PrimaryKey().Identity()
-                .WithColumn("UserId").AsString(80)
+                .WithColumn("UserId").AsString(36)
                 .WithColumn("UserName").AsString(80)
                 .WithColumn("Type").AsString(10)
                 .WithColumn("Region").AsString(80)
