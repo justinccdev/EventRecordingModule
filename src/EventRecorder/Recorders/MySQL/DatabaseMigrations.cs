@@ -30,7 +30,7 @@ using FluentMigrator;
 namespace EventRecordingModule
 {
     [Migration(1)]
-    public class InitialDatabase : Migration
+    public class DatabaseMigrations : Migration
     {
         public override void Up()
         {
