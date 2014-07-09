@@ -27,7 +27,7 @@
 
 using FluentMigrator;
 
-namespace EventRecordingModule
+namespace EventRecorder
 {
     [Migration(1)]
     public class DatabaseMigrations : Migration

@@ -31,17 +31,12 @@ using OpenSim.Framework;
 
 namespace EventRecorder
 {
-    public class UserChatEvent : IEvent
+    public class UserChatEvent : UserEvent
     {
-        public UUID UserId { get; set; }
-        public string UserName { get; set; }
-        public string RegionName { get; set; }
         public Vector3 Origin { get; set; }
         public ChatTypeEnum ChatType { get; set; }
         public string Text { get; set; }
         public int Channel { get; set; }
-        public DateTime DateTime { get; set; }
-        public string GridId { get; set; }
 
         public UserChatEvent()
         {
@@ -53,19 +48,15 @@ namespace EventRecorder
 
         public UserChatEvent(
             UUID userId, string userName, Vector3 origin, ChatTypeEnum chatType, string text, int channel, string gridId, string regionName, DateTime datetime)
+            : base(userId, userName, gridId, regionName, datetime)
         {
-            UserId = userId;
-            UserName = userName;
             Origin = origin;
             ChatType = chatType;
             Text = text;
             Channel = channel;
-            GridId = gridId;
-            RegionName = regionName;
-            DateTime = DateTime.Now;
         }
 
-        public bool Record(IRecorder recorder)
+        public override bool Record(IRecorder recorder)
         {
             return recorder.RecordEvent(this);
         }

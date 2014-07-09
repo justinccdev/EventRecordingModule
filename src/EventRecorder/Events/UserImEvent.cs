@@ -30,17 +30,12 @@ using OpenMetaverse;
 
 namespace EventRecorder
 {
-    public class UserImEvent : IEvent
+    public class UserImEvent : UserEvent
     {
-        public UUID UserId { get; set; }
-        public string UserName { get; set; }
         public UUID ReceiverId { get; set; }
         public string ReceiverName { get; set; }
         public bool IsReceiverGroup { get; set; }
         public string Text { get; set; }
-        public string RegionName { get; set; }
-        public DateTime DateTime { get; set; }
-        public string GridId { get; set; }
 
         public UserImEvent()
         {
@@ -55,19 +50,15 @@ namespace EventRecorder
         public UserImEvent(
             UUID userId, string userName, UUID receiverId, string receiverName, bool isReceiverGroup, 
             string text, string gridId, string regionName, DateTime datetime)
+            : base(userId, userName, gridId, regionName, datetime)
         {
-            UserId = userId;
-            UserName = userName;
             ReceiverId = receiverId;
             ReceiverName = receiverName;
             IsReceiverGroup = isReceiverGroup;
             Text = text;
-            GridId = gridId;
-            RegionName = regionName;
-            DateTime = DateTime.Now;
         }
 
-        public bool Record(IRecorder recorder)
+        public override bool Record(IRecorder recorder)
         {
             return recorder.RecordEvent(this);
         }
