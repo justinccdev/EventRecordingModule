@@ -126,4 +126,22 @@ namespace EventRecorder
             Rename.Table("UserRegionEvents").To("Events");
         }
     }
+
+    [Migration(6)]
+    public class RenameRegionColumn : Migration
+    {       
+        public override void Up()
+        {
+            Rename.Column("Region").OnTable("UserRegionEvents").To("RegionName");
+            Rename.Column("Region").OnTable("UserChatEvents").To("RegionName");
+            Rename.Column("Region").OnTable("UserImEvents").To("RegionName");
+        }
+
+        public override void Down()
+        {
+            Rename.Column("RegionName").OnTable("UserRegionEvents").To("Region");
+            Rename.Column("RegionName").OnTable("UserChatEvents").To("Region");
+            Rename.Column("RegionName").OnTable("UserImEvents").To("Region");
+        }
+    }
 }

@@ -79,7 +79,7 @@ namespace EventRecorder
                     dbcon.Open();
 
                     using (MySqlCommand cmd = new MySqlCommand(
-                        "insert into UserChatEvents (UserId, UserName, OriginX, OriginY, OriginZ, Type, Text, Channel, GridId, Region, DateTime) values (?UserId, ?UserName, ?OriginX, ?OriginY, ?OriginZ, ?Type, ?Text, ?Channel, ?GridId, ?Region, ?DateTime)",
+                        "insert into UserChatEvents (UserId, UserName, OriginX, OriginY, OriginZ, Type, Text, Channel, GridId, RegionName, DateTime) values (?UserId, ?UserName, ?OriginX, ?OriginY, ?OriginZ, ?Type, ?Text, ?Channel, ?GridId, ?RegionName, ?DateTime)",
                         dbcon))
                     {
                         cmd.Parameters.AddWithValue("?UserId", ev.UserId);
@@ -91,7 +91,7 @@ namespace EventRecorder
                         cmd.Parameters.AddWithValue("?Text", ev.Text);
                         cmd.Parameters.AddWithValue("?Channel", ev.Channel);
                         cmd.Parameters.AddWithValue("?GridId", ev.GridId);
-                        cmd.Parameters.AddWithValue("?Region", ev.RegionName);
+                        cmd.Parameters.AddWithValue("?RegionName", ev.RegionName);
                         cmd.Parameters.AddWithValue("?DateTime", ev.DateTime);
                         cmd.ExecuteNonQuery();
                     }
@@ -116,7 +116,7 @@ namespace EventRecorder
                     dbcon.Open();
 
                     using (MySqlCommand cmd = new MySqlCommand(
-                        "insert into UserImEvents (UserId, UserName, ReceiverId, ReceiverName, ReceiverType, Text, GridId, Region, DateTime) values (?UserId, ?UserName, ?ReceiverId, ?ReceiverName, ?ReceiverType, ?Text, ?GridId, ?Region, ?DateTime)",
+                        "insert into UserImEvents (UserId, UserName, ReceiverId, ReceiverName, ReceiverType, Text, GridId, RegionName, DateTime) values (?UserId, ?UserName, ?ReceiverId, ?ReceiverName, ?ReceiverType, ?Text, ?GridId, ?RegionName, ?DateTime)",
                         dbcon))
                     {
                         cmd.Parameters.AddWithValue("?UserId", ev.UserId);
@@ -126,7 +126,7 @@ namespace EventRecorder
                         cmd.Parameters.AddWithValue("?ReceiverType", ev.IsReceiverGroup ? "group" : "user");
                         cmd.Parameters.AddWithValue("?Text", ev.Text);
                         cmd.Parameters.AddWithValue("?GridId", ev.GridId);
-                        cmd.Parameters.AddWithValue("?Region", ev.RegionName);
+                        cmd.Parameters.AddWithValue("?RegionName", ev.RegionName);
                         cmd.Parameters.AddWithValue("?DateTime", ev.DateTime);
                         cmd.ExecuteNonQuery();
                     }
@@ -151,14 +151,14 @@ namespace EventRecorder
                     dbcon.Open();
 
                     using (MySqlCommand cmd = new MySqlCommand(
-                        "insert into UserRegionEvents (UserId, UserName, Type, GridId, Region, DateTime) values (?UserId, ?UserName, ?Type, ?GridId, ?Region, ?DateTime)",
+                        "insert into UserRegionEvents (UserId, UserName, Type, GridId, RegionName, DateTime) values (?UserId, ?UserName, ?Type, ?GridId, ?RegionName, ?DateTime)",
                         dbcon))
                     {
                         cmd.Parameters.AddWithValue("?UserId", ev.UserId);
                         cmd.Parameters.AddWithValue("?UserName", ev.UserName);
                         cmd.Parameters.AddWithValue("?Type", ev.EventType);
                         cmd.Parameters.AddWithValue("?GridId", ev.GridId);
-                        cmd.Parameters.AddWithValue("?Region", ev.RegionName);
+                        cmd.Parameters.AddWithValue("?RegionName", ev.RegionName);
                         cmd.Parameters.AddWithValue("?DateTime", ev.DateTime);
                         cmd.ExecuteNonQuery();
                     }
