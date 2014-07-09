@@ -38,9 +38,7 @@ namespace EventRecorder
         public string Text { get; set; }
         public int Channel { get; set; }
 
-        public UserChatEvent()
-        {
-        }
+        public UserChatEvent() : base() {}
 
         public UserChatEvent(UUID userId, string userName, Vector3 origin, ChatTypeEnum chatType, string text, int channel, string gridId, string regionName)
             : this(userId, userName, origin, chatType, text, channel, gridId, regionName, DateTime.Now)
@@ -48,7 +46,7 @@ namespace EventRecorder
 
         public UserChatEvent(
             UUID userId, string userName, Vector3 origin, ChatTypeEnum chatType, string text, int channel, string gridId, string regionName, DateTime datetime)
-            : base(userId, userName, gridId, regionName, datetime)
+            : base(userId, userName, "chat", gridId, regionName, datetime)
         {
             Origin = origin;
             ChatType = chatType;
@@ -59,11 +57,6 @@ namespace EventRecorder
         public override bool Record(IRecorder recorder)
         {
             return recorder.RecordEvent(this);
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0} for {1} {2}", "chat", UserName, UserId);
         }
     }
 }

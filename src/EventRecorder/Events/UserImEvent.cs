@@ -37,9 +37,7 @@ namespace EventRecorder
         public bool IsReceiverGroup { get; set; }
         public string Text { get; set; }
 
-        public UserImEvent()
-        {
-        }
+        public UserImEvent() : base() {}
 
         public UserImEvent(
             UUID userId, string userName, UUID receiverId, string receiverName, bool isReceiverGroup, 
@@ -50,7 +48,7 @@ namespace EventRecorder
         public UserImEvent(
             UUID userId, string userName, UUID receiverId, string receiverName, bool isReceiverGroup, 
             string text, string gridId, string regionName, DateTime datetime)
-            : base(userId, userName, gridId, regionName, datetime)
+            : base(userId, userName, "im", gridId, regionName, datetime)
         {
             ReceiverId = receiverId;
             ReceiverName = receiverName;
@@ -61,11 +59,6 @@ namespace EventRecorder
         public override bool Record(IRecorder recorder)
         {
             return recorder.RecordEvent(this);
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0} for {1} {2}", "IM", UserName, UserId);
         }
     }
 }

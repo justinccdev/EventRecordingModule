@@ -32,11 +32,7 @@ namespace EventRecorder
 {
     public class UserRegionEvent : UserEvent
     {
-        public string EventType { get; set; }
-
-        public UserRegionEvent()
-        {
-        }
+        public UserRegionEvent() : base() {}
 
         public UserRegionEvent(UUID userId, string userName, string eventType, string gridId, string regionName)
             : this(userId, userName, eventType, gridId, regionName, DateTime.Now)
@@ -44,19 +40,12 @@ namespace EventRecorder
 
         public UserRegionEvent(
             UUID userId, string userName, string eventType, string gridId, string regionName, DateTime datetime)
-            : base(userId, userName, gridId, regionName, datetime)
-        {
-            EventType = eventType;
-        }
+            : base(userId, userName, eventType, gridId, regionName, datetime)
+        {}
 
         public override bool Record(IRecorder recorder)
         {
             return recorder.RecordEvent(this);
-        }
-
-        public override string ToString()
-        {
-            return string.Format("{0} for {1} {2}", EventType, UserName, UserId);
         }
     }
 }
