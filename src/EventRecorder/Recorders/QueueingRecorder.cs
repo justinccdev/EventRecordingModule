@@ -101,7 +101,7 @@ namespace EventRecorder
 
             m_decoratedRecorder.Initialise(configSource);
                         
-            int maxQueueSize = config.GetInt("MaxEventQueueSize", int.MaxValue);
+            int maxQueueSize = config.GetInt("MaxEventQueueSize", 5000);
 
             if (maxQueueSize <= 0)
                 throw new Exception(string.Format("MaxEventQueueSize must be > 0.  Value {0} is invalid", maxQueueSize));
