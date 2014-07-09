@@ -58,6 +58,11 @@ namespace EventRecorder
         public bool Enabled { get; private set; }
 
         /// <summary>
+        /// Are we recording when a user logs in?
+        /// </summary>
+        public bool RecordUserLoginEvents { get; set; }
+
+        /// <summary>
         /// Are we recording when a user logs out?
         /// </summary>
         public bool RecordUserLogoutEvents { get; set; }
@@ -167,6 +172,7 @@ namespace EventRecorder
             m_recorder = new QueueingRecorder(decoratedRecorder);
             m_recorder.Initialise(configSource);
 
+            RecordUserLoginEvents = config.GetBoolean("RecordUserLoginEvents", true);
             RecordUserLogoutEvents = config.GetBoolean("RecordUserLogoutEvents", true);
             RecordUserRegionEnterEvents = config.GetBoolean("RecordUserRegionEnterEvents", true);
             RecordUserChatEvents = config.GetBoolean("RecordUserChatEvents", false);
@@ -213,6 +219,7 @@ namespace EventRecorder
             ConsoleDisplayList cdl = new ConsoleDisplayList();
             cdl.AddRow("Recorder", m_recorder.Name);
             cdl.AddRow("Grid ID", m_gridId);
+            cdl.AddRow("RecordUserLoginEvents", RecordUserLoginEvents);
             cdl.AddRow("RecordUserLogoutEvents", RecordUserLogoutEvents);
             cdl.AddRow("RecordUserRegionEnterEvents", RecordUserRegionEnterEvents);
             cdl.AddRow("RecordUserChatEvents", RecordUserChatEvents);
@@ -249,7 +256,8 @@ namespace EventRecorder
 
             if ((sp.TeleportFlags & Constants.TeleportFlags.ViaLogin) != 0)
             {
-                m_recorder.RecordEvent(new UserRegionEvent(sp.UUID, sp.Name, "login", m_gridId, sp.Scene.Name));
+                if (RecordUserLoginEvents)
+                    m_recorder.RecordEvent(new UserRegionEvent(sp.UUID, sp.Name, "login", m_gridId, sp.Scene.Name));
             }
             else
             {

@@ -21,23 +21,28 @@
     ; on the same grid
     ;GridId = my-grid-id
 
-    ; Control whether the modules records user logout.
+    ; Control whether the module records user login.
+    ; Default is true.
+    RecordUserLoginEvents = true
+
+    ; Control whether the module records user logout.
+    ; Default is true.
     RecordUserLogoutEvents = true
 
     ; Control whether the module records when a user enters a region other than the one they entered on login.
-    ; Defaults to true.
+    ; Default is true.
     RecordUserRegionEnterEvents = true
 
     ; Control whether the module records user chat.  
-    ; Defaults to false.
+    ; Default is false.
     RecordUserChatEvents = false
 
     ; Control whether the module records user to user instant messages.  
-    ; Defaults to false.
+    ; Default is false.
     RecordUserToUserImEvents = false
 
     ; Control whether the module records user to group instant messages.  
-    ; Defaults to false.
+    ; Default is false.
     RecordUserToGroupImEvents = false
 
     ; Maximum number of events that will be queued for writing before additional events are ignored.
