@@ -33,6 +33,10 @@ database that you specify in the ConnectionString.  You will always need to set 
 
 * evr info - This will print out current information about the event recorder (e.g. number of events queued for writing.
 
+## Web Interface ##
+
+Analyzing the generated data can be done in a number of ways.  Some very basic examples are given at [WEB INTERFACE].
+
 ##Limitations##
 
 Because this module works at the simulator level, on a multi-simulator installation of OpenSimulator it needs to be
@@ -53,5 +57,7 @@ This module is hosted at [EVENT RECORDER].  Please report any issues with the bu
 [EVENT RECORDER] - https://github.com/justincc/EventRecordingModule
 
 [MODULE BUILDING] - http://opensimulator.org/wiki/IRegionModule#From_existing_module_code
+
+[WEB INTERFACE] - https://github.com/justincc/EventRecorderWebInterface
 
 vim: ts=4:sw=4:et:tw=120
