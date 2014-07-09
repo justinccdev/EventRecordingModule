@@ -115,7 +115,6 @@ namespace EventRecorder
         /// </summary>
         private IGroupsModule m_groupsModule;
 
-        private const int GridIdMaxSize = 36;
         private string m_gridId;
         
         public void Initialise(IConfigSource configSource)
@@ -143,11 +142,11 @@ namespace EventRecorder
 
             m_gridId = config.GetString("GridID");
 
-            if (m_gridId.Length > GridIdMaxSize)
+            if (m_gridId.Length > EventRecordingModuleConstants.GridIdMaxSize)
                 throw new Exception(
                     string.Format(
                         "GridId [{0}] at {1} chars is longer than the maximum {2} chars", 
-                        m_gridId, m_gridId.Length, GridIdMaxSize));
+                    m_gridId, m_gridId.Length, EventRecordingModuleConstants.GridIdMaxSize));
 
             m_log.DebugFormat("[EVENT RECORDER]: GridId set to {0}", m_gridId);
 
