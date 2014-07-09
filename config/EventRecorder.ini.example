@@ -21,6 +21,9 @@
     ; on the same grid
     ;GridId = my-grid-id
 
+    ; Control whether the modules records user logout.
+    RecordUserLogoutEvents = true
+
     ; Control whether the module records when a user enters a region other than the one they entered on login.
     ; Defaults to true.
     RecordUserRegionEnterEvents = true
