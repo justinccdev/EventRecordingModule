@@ -60,8 +60,12 @@ namespace EventRecorder
         /// <summary>
         /// Sets whether we are recording user to user instant messages.
         /// </summary>
-        /// <value><c>true</c> if record user im to user events; otherwise, <c>false</c>.</value>
         public bool RecordUserToUserImEvents { get; set; }
+
+        /// <summary>
+        /// Sets whether we are recording user to group instant messages.
+        /// </summary>
+        public bool RecordUserToGroupImEvents { get; set; }
 
         /// <summary>
         /// Track the number of scenes being monitored.
@@ -149,6 +153,7 @@ namespace EventRecorder
             m_recorder.Initialise(configSource);
 
             RecordUserToUserImEvents = config.GetBoolean("RecordUserToUserImEvents", RecordUserToUserImEvents);
+            RecordUserToGroupImEvents = config.GetBoolean("RecordUserToGroupImEvents", RecordUserToUserImEvents);
         }
         
         public void PostInitialise()
@@ -191,6 +196,7 @@ namespace EventRecorder
             cdl.AddRow("Recorder", m_recorder.Name);
             cdl.AddRow("Grid ID", m_gridId);
             cdl.AddRow("RecordUserToUserImEvents", RecordUserToUserImEvents);
+            cdl.AddRow("RecordUserToGroupImEvents", RecordUserToGroupImEvents);
             cdl.AddRow("Events queue capacity", m_recorder.Capacity);
             cdl.AddRow("Events queued", m_recorder.Count);
 
@@ -253,8 +259,16 @@ namespace EventRecorder
 
             bool toGroup = msg.dialog == (byte)InstantMessageDialog.SessionSend;
 
-            if (!toGroup && !RecordUserToUserImEvents)
-                return;
+            if (toGroup)
+            {
+                if (!RecordUserToGroupImEvents)
+                    return;
+            }
+            else
+            {
+                if (!RecordUserToUserImEvents)
+                    return;
+            }
 
             string receiverName = "UNKNOWN";
             UUID receiverId;

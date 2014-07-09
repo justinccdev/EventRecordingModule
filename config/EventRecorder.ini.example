@@ -21,8 +21,11 @@
     ; on the same grid
     ;GridId = my-grid-id
 
-    ; Uncomment this to record user to user instant messages.  Default is false.
+    ; Control whether the module records user to user instant messages.  Defaults to false.
     ; RecordUserToUserImEvents = true
+
+    ; Control whether the module records user to group instant messages.  Defaults to false.
+    ; RecordUserToGroupImEvents = true
 
     ; Maximum number of events that will be queued for writing before additional events are ignored.
     ; Increase this if you see warnings on the console about events being discarded.
