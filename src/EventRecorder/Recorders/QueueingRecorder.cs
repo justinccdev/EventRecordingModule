@@ -75,6 +75,9 @@ namespace EventRecorder
         /// </remarks>
         private bool m_warnOverMaxQueue = true;       
 
+        /// <summary>
+        /// Used to cancel the event writing thread on shutdown if necessary.
+        /// </summary>
         private CancellationTokenSource m_cancelSource = new CancellationTokenSource();
 
         /// <summary>
