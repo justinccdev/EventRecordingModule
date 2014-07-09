@@ -45,6 +45,8 @@
     ; Default is false.
     RecordUserToGroupImEvents = false
 
+    ; ALL CONFIG SETTINGS BELOW THIS POINT ARE ADVANCED AND SHOULD NOT NORMALLY NEED TO BE CHANGED
+
     ; Maximum number of events that will be queued for writing before additional events are ignored.
     ; Increase this if you see warnings on the console about events being discarded.
     ; Storing more events will take more memory.
