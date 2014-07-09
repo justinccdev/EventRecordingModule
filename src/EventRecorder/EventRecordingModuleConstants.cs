@@ -30,5 +30,7 @@ namespace EventRecorder
     public static class EventRecordingModuleConstants
     {
         public const int GridIdMaxSize = 36;
+        public const int UserNameMaxSize = 80;
+        public const int RegionNameMaxSize = 80;
     }
 }
