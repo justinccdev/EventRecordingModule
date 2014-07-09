@@ -11,7 +11,7 @@
 
     ; If using the MySQL Recorder, set this to the MySQL connection string.
     ; Note that Database is different from the OpenSimulator database, though in principle EventRecorder could live there too
-    ConnectionString = "Data Source=localhost;Database=eventrecorder;User ID=root;Password=passw0rd;"
+    ;ConnectionString = "Data Source=localhost;Database=eventrecorder;User ID=root;Password=passw0rd;"
 
     ; This is the id that will be added to all recorded events
     ; It must be set by changing the value and then uncommenting the line - the module will not start without it
@@ -21,13 +21,20 @@
     ; on the same grid
     ;GridId = my-grid-id
 
-    ; Control whether the module records user chat.  Defaults to false.
+    ; Control whether the module records when a user enters a region other than the one they entered on login.
+    ; Defaults to true.
+    RecordUserRegionEnterEvents = true
+
+    ; Control whether the module records user chat.  
+    ; Defaults to false.
     RecordUserChatEvents = false
 
-    ; Control whether the module records user to user instant messages.  Defaults to false.
+    ; Control whether the module records user to user instant messages.  
+    ; Defaults to false.
     RecordUserToUserImEvents = false
 
-    ; Control whether the module records user to group instant messages.  Defaults to false.
+    ; Control whether the module records user to group instant messages.  
+    ; Defaults to false.
     RecordUserToGroupImEvents = false
 
     ; Maximum number of events that will be queued for writing before additional events are ignored.

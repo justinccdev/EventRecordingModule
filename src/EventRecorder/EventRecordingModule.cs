@@ -58,12 +58,17 @@ namespace EventRecorder
         public bool Enabled { get; private set; }
 
         /// <summary>
-        /// Are we record user chat events?
+        /// Are we recording when an avatar enters a region other than on the one they enter on login?
+        /// </summary>
+        public bool RecordUserRegionEnterEvents { get; set; }
+
+        /// <summary>
+        /// Are we recording user chat?
         /// </summary>
         public bool RecordUserChatEvents { get; set; }
 
         /// <summary>
-        /// Are recording user to user instant messages?
+        /// Are we recording user to user instant messages?
         /// </summary>
         public bool RecordUserToUserImEvents { get; set; }
 
@@ -106,6 +111,8 @@ namespace EventRecorder
         public void Initialise(IConfigSource configSource)
         {
 //            m_log.DebugFormat("[EVENT RECORDER]: INITIALIZED MODULE");
+
+            RecordUserRegionEnterEvents = true;
 
             HashSet<string> recorders = new HashSet<string>{ "OpenSimLog", "MySQL" };
 
@@ -157,6 +164,7 @@ namespace EventRecorder
             m_recorder = new QueueingRecorder(decoratedRecorder);
             m_recorder.Initialise(configSource);
 
+            RecordUserRegionEnterEvents = config.GetBoolean("RecordUserRegionEnterEvents", RecordUserRegionEnterEvents);
             RecordUserChatEvents = config.GetBoolean("RecordUserChatEvents", RecordUserChatEvents);
             RecordUserToUserImEvents = config.GetBoolean("RecordUserToUserImEvents", RecordUserToUserImEvents);
             RecordUserToGroupImEvents = config.GetBoolean("RecordUserToGroupImEvents", RecordUserToGroupImEvents);
@@ -201,6 +209,7 @@ namespace EventRecorder
             ConsoleDisplayList cdl = new ConsoleDisplayList();
             cdl.AddRow("Recorder", m_recorder.Name);
             cdl.AddRow("Grid ID", m_gridId);
+            cdl.AddRow("RecordUserRegionEnterEvents", RecordUserRegionEnterEvents);
             cdl.AddRow("RecordUserChatEvents", RecordUserChatEvents);
             cdl.AddRow("RecordUserToUserImEvents", RecordUserToUserImEvents);
             cdl.AddRow("RecordUserToGroupImEvents", RecordUserToGroupImEvents);
@@ -234,9 +243,14 @@ namespace EventRecorder
                 return;
 
             if ((sp.TeleportFlags & Constants.TeleportFlags.ViaLogin) != 0)
+            {
                 m_recorder.RecordEvent(new UserRegionEvent(sp.UUID, sp.Name, "login", m_gridId, sp.Scene.Name));
+            }
             else
-                m_recorder.RecordEvent(new UserRegionEvent(sp.UUID, sp.Name, "enter", m_gridId, sp.Scene.Name));
+            {
+                if (RecordUserRegionEnterEvents)
+                    m_recorder.RecordEvent(new UserRegionEvent(sp.UUID, sp.Name, "enter", m_gridId, sp.Scene.Name));
+            }
 
             sp.ControllingClient.OnChatFromClient += HandleOnChatFromClient;
             sp.ControllingClient.OnInstantMessage += HandleOnInstantMessage;
