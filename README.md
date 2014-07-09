@@ -52,6 +52,11 @@ case when the next version of OpenSimulator is released
 
 This module is hosted at [EVENT RECORDER].  Please report any issues with the bug tracker there.
 
+##Credits##
+
+* Justin Clark-Casey (@justincc, http://justincc.org) 
+* Created in collaboration with AFRL Discovery Lab and Dr.Rob Williams, research director.
+
 ##References##
 
 [EVENT RECORDER] - https://github.com/justincc/EventRecordingModule
