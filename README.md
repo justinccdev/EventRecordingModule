@@ -14,14 +14,17 @@ higher than 2.8 to run it.
 
 ##Building##
 
-Follow the standard instructions for building modules from source [MODULE BUILDING].
+1.  Copy the support libraries in lib/*.dll to $OPENSIM_BASE/bin.  These are referenced in the build process.
+
+2.  For the rest, follow the standard instructions for building modules from source [MODULE BUILDING].
 
 ## Installation
 
 The build process will copy the EventRecorder.dll file to $OPENSIM_BASE/bin automatically on each build.  However, you
-will also need to perform the following steps if you haven't before.
+will also need to perform the following steps.
 
-1.  Copy the support libraries in lib/*.dll to $OPENSIM_BASE/bin.  
+1.  If you are using a prebuilt-binary and so have not done this in the building step, copy the support libraries in 
+lib/*.dll to $OPENSIM_BASE/bin.  
 
 2.  Copy the [EventRecorder] section of config/EventRecorder.ini to OpenSim.ini OR copy the config/EventRecorder.ini to
 $OPENSIM_BASE/bin/addon-modules/EventRecordingModule/config/EventRecorder.ini 
