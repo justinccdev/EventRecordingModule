@@ -19,7 +19,7 @@
     ; Currently, this is not using data directly from any [GridInfo] section as those are presented directly to the user and can be changed.
     ; Technically, this could be used to identify any simulator or group of simulators, though usually this will be the same for all simulators
     ; on the same grid
-    ;GridId = my-grid-id
+    ;GridID = my-grid-id
 
     ; Control whether the module records user login.
     ; Default is true.

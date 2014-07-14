@@ -145,10 +145,10 @@ namespace EventRecorder
             if (m_gridId.Length > EventRecordingModuleConstants.GridIdMaxSize)
                 throw new Exception(
                     string.Format(
-                        "GridId [{0}] at {1} chars is longer than the maximum {2} chars", 
+                        "GridID [{0}] at {1} chars is longer than the maximum {2} chars", 
                     m_gridId, m_gridId.Length, EventRecordingModuleConstants.GridIdMaxSize));
 
-            m_log.DebugFormat("[EVENT RECORDER]: GridId set to {0}", m_gridId);
+            m_log.DebugFormat("[EVENT RECORDER]: GridID set to {0}", m_gridId);
 
             string recorderName = config.GetString("Recorder");           
 
