@@ -63,7 +63,7 @@ This module is hosted at [EVENT RECORDER].  Please report any issues with the bu
 
 ##Credits##
 
-* Justin Clark-Casey (@justincc, http://justincc.org) 
+* Justin Clark-Casey (http://justincc.org, http://twitter.com/justincc) 
 * Created in collaboration with AFRL Discovery Lab and Dr.Rob Williams, research director.
 
 ##References##
