@@ -2,10 +2,16 @@
 
 ##Introduction##
 
-This module will record various events that take place on a simulator (e.g.  avatar entering a region) to some other
-data source for later analysis.
+This module can record various user related events that take place on a simulator for later analysis.
 
-Created in collaboration with AFRL Discovery Lab and Dr.Rob Williams, research director.
+Events that can currently be recorded are
+
+1. User login.
+2. User logout.
+3. User entrance to a specific region.
+4. User chat.
+5. User to user instant messages.
+6. User to group instant messages.
 
 ##Requirements##
 
