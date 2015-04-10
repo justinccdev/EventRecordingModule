@@ -228,9 +228,15 @@ namespace EventRecorder
                     {
                         m_log.InfoFormat("[EVENT RECORDER]: Waiting to write {0} events after stop.", eventsLeft);
 
-                        while (eventsLeft > 0)
+                        bool isFinished = false;
+
+                        while (!isFinished)
                         {
-                            if (!m_finishedWritingAfterStop.WaitOne(EventWriteTimeoutOnStop))
+                            if (m_finishedWritingAfterStop.WaitOne(EventWriteTimeoutOnStop))
+                            {
+                                isFinished = true;
+                            }
+                            else
                             {
                                 // After timeout no events have been written
                                 if (eventsLeft == m_eventWriteQueue.Count)
@@ -239,11 +245,13 @@ namespace EventRecorder
                                         "[EVENT RECORDER]: No events written after {0} ms wait.  Discarding remaining {1} events", 
                                         EventWriteTimeoutOnStop, eventsLeft);
 
-                                    break;
+                                    isFinished = true;
+                                }
+                                else
+                                {
+                                    eventsLeft = m_eventWriteQueue.Count;
                                 }
                             }
-
-                            eventsLeft = m_eventWriteQueue.Count;
                         }
                     }
                 }
