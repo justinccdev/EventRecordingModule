@@ -141,16 +141,26 @@ namespace EventRecorder
             {
                 while (IsRunning || m_eventWriteQueue.Count > 0)
                 {
-//                    Console.WriteLine("Sleeping");
-//                    Thread.Sleep(15000);
-                    IEvent ev = m_eventWriteQueue.Take(m_cancelSource.Token);
-//                    Console.WriteLine("Finished Sleeping");
+                    try
+                    {
+                        IEvent ev = m_eventWriteQueue.Take(m_cancelSource.Token);
 
-                    RecordEventFromQueue(ev);
+                        RecordEventFromQueue(ev);
+                    }
+                    catch (ObjectDisposedException e)
+                    {
+                        // If we see this whilst not running then it may be due to a race where this thread checks
+                        // IsRunning after the stopping thread sets it to false and disposes of the cancellation source.
+                        if (IsRunning)
+                            throw e;
+                        else
+                            break;
+                    }
                 }
             }
             catch (OperationCanceledException)
             {
+                // We expect this if when cancellation is invoked during Stop()
             }
 
             m_finishedWritingAfterStop.Set();
