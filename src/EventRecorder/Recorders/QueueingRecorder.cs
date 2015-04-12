@@ -221,36 +221,32 @@ namespace EventRecorder
                     int eventsLeft = m_eventWriteQueue.Count;
 //                    Console.WriteLine("eventsLeft {0}", eventsLeft);
                     if (eventsLeft <= 0)
-                    {
                         m_cancelSource.Cancel();
-                    }
-                    else 
+
+                    m_log.InfoFormat("[EVENT RECORDER]: Waiting to write {0} events after stop.", eventsLeft);
+
+                    bool isFinished = false;
+
+                    while (!isFinished)
                     {
-                        m_log.InfoFormat("[EVENT RECORDER]: Waiting to write {0} events after stop.", eventsLeft);
-
-                        bool isFinished = false;
-
-                        while (!isFinished)
+                        if (m_finishedWritingAfterStop.WaitOne(EventWriteTimeoutOnStop))
                         {
-                            if (m_finishedWritingAfterStop.WaitOne(EventWriteTimeoutOnStop))
+                            isFinished = true;
+                        }
+                        else
+                        {
+                            // After timeout no events have been written
+                            if (eventsLeft == m_eventWriteQueue.Count)
                             {
+                                m_log.WarnFormat(
+                                    "[EVENT RECORDER]: No events written after {0} ms wait.  Discarding remaining {1} events", 
+                                    EventWriteTimeoutOnStop, eventsLeft);
+
                                 isFinished = true;
                             }
                             else
                             {
-                                // After timeout no events have been written
-                                if (eventsLeft == m_eventWriteQueue.Count)
-                                {
-                                    m_log.WarnFormat(
-                                        "[EVENT RECORDER]: No events written after {0} ms wait.  Discarding remaining {1} events", 
-                                        EventWriteTimeoutOnStop, eventsLeft);
-
-                                    isFinished = true;
-                                }
-                                else
-                                {
-                                    eventsLeft = m_eventWriteQueue.Count;
-                                }
+                                eventsLeft = m_eventWriteQueue.Count;
                             }
                         }
                     }
