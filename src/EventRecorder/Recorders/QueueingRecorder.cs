@@ -188,6 +188,9 @@ namespace EventRecorder
 
         private bool RecordEventInternal(IEvent ev)
         {
+            if (!IsRunning)
+                return false;
+
             // We need to lock here to avoid a situation where two threads could simultaneous attempt to record an
             // event and both pass the size check before writing.
             lock (m_eventWriteQueue)
