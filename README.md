@@ -24,7 +24,7 @@ higher than 2.8 to run it.
 
 2.  For the rest, follow the standard instructions for building modules from source [MODULE BUILDING].
 
-## Installation
+##Installation##
 
 The build process will copy the EventRecorder.dll file to $OPENSIM_BASE/bin automatically on each build.  However, you
 will also need to perform the following steps.
@@ -65,6 +65,10 @@ This module is hosted at [EVENT RECORDER].  Please report any issues with the bu
 
 * Justin Clark-Casey (http://justincc.org, http://twitter.com/justincc) 
 * Created in collaboration with AFRL Discovery Lab and Dr.Rob Williams, research director.
+
+##Third Party Libraries##
+
+* FluidMigrator (1.2.0) - https://github.com/schambers/fluentmigrator
 
 ##References##
 
